@@ -50,6 +50,8 @@
     ],
 
     "web_accessible_resources": [
+      "/icons/Voisascript-1-1.png",
+      "/icons/Voisascript 1-1(16).png",
       "/icons/content/icons8-fast-forward-64.png",
       "/icons/content/icons8-play-64.png",
       "/icons/content/icons8-pause-64.png",

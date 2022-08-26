@@ -13,7 +13,7 @@ export function changeElement(contentArr: ElementValues[], body: HTMLElement, fu
         container.innerHTML = `
         <audio src="https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-61905/zapsplat_multimedia_alert_chime_short_musical_notification_cute_child_like_001_64918.mp3?_=1" data-id="v-audio" class=""></audio>
         <div class="hover-test-box">
-            <div class="v-logo"></div>
+            <div class="v-logo pulsate-bck" style="content: url(${Browser.runtime.getURL('./icons/Voisascript-1-1.png')});"></div>
             <span class="popup-audio" id="myPopup">
             <div class="audio-control play" style="content: url(${Browser.runtime.getURL('./icons/content/icons8-play-64.png')});"></div>
                 <div class="seek-box">

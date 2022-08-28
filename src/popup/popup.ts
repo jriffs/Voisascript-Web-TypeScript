@@ -7,11 +7,17 @@ interface userProjects {
     projectDesc: string
 }
 
+interface userFiles {
+    id: number,
+    fileName: string
+}
+
 interface userData {
     userToken: string,
     username: string,
     isLoggedIn: Boolean,
     projects: userProjects[],
+    files: userFiles[],
     stats: {
         projects: number,
         files: number
@@ -103,6 +109,7 @@ async function updateUserData(bearer: string, Data: userData) {
         username: Data.username,
         isLoggedIn: true,
         projects: Data.projects,
+        files: Data.files,
         stats: {
             projects: Data.stats.projects,
             files: Data.stats.files

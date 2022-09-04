@@ -26,6 +26,6 @@ export interface userData {
     }
 }
 
-export type cmc = "retreive" | "resume" | "pause" | "start" | "stop"
+export type cmc = "retreive" | "resume" | "pause" | "start" | "stop" | "review"
 
 

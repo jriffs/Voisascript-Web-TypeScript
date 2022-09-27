@@ -1,5 +1,6 @@
 import Browser from "webextension-polyfill"
 import { changeHeaders } from "./webRequest";
+import { getURL } from "../background/get-url";
 
 console.log(`i'm here 😁`)
 
@@ -15,6 +16,13 @@ Browser.contextMenus.onClicked.addListener((details) => {
 		return
 	}
 	Browser.action.openPopup()
+})
+
+  
+Browser.runtime.onMessage.addListener(async (message: any, sender: Browser.Runtime.MessageSender) => {
+	const url = await getURL(message.message)
+	console.log(message.message)
+	return Promise.resolve({data: url})
 })
 
 changeHeaders()

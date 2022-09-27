@@ -1,5 +1,3 @@
-import { type } from "os"
-
 export interface ElementValues {
     element: Element
     ID: string
@@ -12,7 +10,13 @@ export interface OnMessageRequestValue{
 
 export interface userProjects {
     projectName: string,
+    projectID: string,
     projectDesc: string
+}
+
+export interface userFiles {
+    id: number,
+    fileName: string
 }
 
 export interface userData {
@@ -20,6 +24,7 @@ export interface userData {
     username: string,
     isLoggedIn: Boolean,
     projects: userProjects[],
+    files: [userFiles[]],
     stats: {
         projects: number,
         files: number

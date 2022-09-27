@@ -1,28 +1,6 @@
-import { cmc } from "src/interfaces/interfaces"
+import { cmc, userProjects, userFiles, userData } from "../interfaces/interfaces"
 import Browser from "webextension-polyfill"
-import { switchTabs } from "./tabSelect";
-
-interface userProjects {
-    projectName: string,
-    projectDesc: string
-}
-
-interface userFiles {
-    id: number,
-    fileName: string
-}
-
-interface userData {
-    userToken: string,
-    username: string,
-    isLoggedIn: Boolean,
-    projects: userProjects[],
-    files: userFiles[],
-    stats: {
-        projects: number,
-        files: number
-    }
-}
+import { switchTabs } from "./tabSelect"
 
 const body = document.body
 const http = new XMLHttpRequest()
@@ -85,19 +63,24 @@ signInButton.addEventListener('click', async(e) => {
     }
     if (tab.url.split('//')[1].includes('voisascript.com/auth/ext?Bearer=')) {
         let bearer = tab.url.split('//')[1].split('=')[1]
-        http.open('GET', 'http://localhost:5000/auth/ext', true)
-        http.setRequestHeader('Authorization', `Bearer ${bearer}`)
-        http.onreadystatechange = async () => {
-            if (http.readyState == 4 && http.status == 200) {
-                let userData = JSON.parse(http.response)
-                updateUserData(bearer, userData).then(() => {
-                    alert('Sign-In Successful 👍')
-                    checkIfUser()
-                })
-                return 
-            }
+        const headers = {
+            "authorization": `Bearer ${bearer}`,
+            "originator": `extension`
         }
-        http.send()
+        const response = await fetch('http://localhost:3000/user/validate', {
+            method: 'GET',
+            // mode: 'no-cors',
+            headers: headers
+        })
+        const userData = await response.json()
+        if (response.ok === true) {
+            console.log(userData)
+            updateUserData(bearer, userData.userData).then(() => {
+                alert('Sign-In Successful 👍')
+                checkIfUser()
+            })
+            return
+        }
         return
     }
     alert(`😭 Sign-In Error: please go to VoisaScript.com for instructions on how to sign-in`)
@@ -131,7 +114,7 @@ async function UpdateUI() {
     // populate projectSelect with data
     userData.projects.forEach((project: userProjects) => {
         const option = document.createElement('option')
-        option.value = project.projectName
+        option.value = `${project.projectName}~${project.projectID}`
         option.text = project.projectName
         projectSelect.appendChild(option)
     })
@@ -151,8 +134,7 @@ async function communicateWithContent(message: cmc) {
         return received.recorderState
     } catch (e) {
         alert(e)
-    }
-    
+    } 
 }
 
 createProjectButton.addEventListener('click', (e)=>{
@@ -256,25 +238,31 @@ uploadButton.addEventListener('click', async (e) => {
     const {userData} = await Browser.storage.local.get('userData')
     const {userToken} = userData
     if (validate()) {
-        http.open('POST', 'http://localhost:5000/files/upload', true)
-        http.setRequestHeader('authorization', `Bearer ${userToken}`)
-        http.onreadystatechange = async () => {
-            if (http.readyState == 4 && http.status == 200) {
-                let data = JSON.parse(http.response)
-                linkHolder.value = data.url
-                updateUserData(userToken, data).then(() => {
-                    UpdateUI()
-                })
-                alert('Upload Successful... copy generated link and paste anywhere in your code')
-                audioFileHolder.value = ''
-                fileNameHolder.textContent = ''
-                recordAudioButton.toggleAttribute('disabled')
-                uploadButton.classList.toggle('hidden')
-                saveFileArea.classList.toggle('hidden')
-                return 
-            }
+        const headers = {
+            authorization: `Bearer ${userToken}`,
+            originator: `Extension`
         }
-        http.send(data)
+        const response = await fetch('http://localhost:5000/files/upload', {
+            method: 'POST',
+            // mode: 'no-cors',
+            headers: headers,
+            body: data
+        })
+        const ResponseData = await response.json()
+        if (response.ok === true) {
+            linkHolder.value = ResponseData.url
+            updateUserData(userToken, ResponseData).then(() => {
+                UpdateUI()
+            })
+            alert('Upload Successful... copy generated link and paste anywhere in your code')
+            audioFileHolder.value = ''
+            fileNameHolder.textContent = ''
+            recordAudioButton.toggleAttribute('disabled')
+            uploadButton.classList.toggle('hidden')
+            saveFileArea.classList.toggle('hidden')
+            return 
+        }
+        alert(`Server Response:${response.status} -- ${JSON.stringify(ResponseData)}`)
         return 
     }
     alert('Please choose an existing project or Create a new one')
@@ -298,8 +286,8 @@ function checkIfAudio(file_name: string) {
 
 function validate() {
     let project = document?.querySelector('select[name=project]') as HTMLSelectElement
-    let newProjectName = document.querySelector('input[name=new-project-name]') as HTMLInputElement
-    let newProjectDesc = document.querySelector('input[name=new-project-desc]') as HTMLInputElement
+    let newProjectName = document.querySelector('input[name=newProjectName]') as HTMLInputElement
+    let newProjectDesc = document.querySelector('input[name=newProjectDesc]') as HTMLInputElement
     let project_val = project.value
     let newProjectName_val = newProjectName.value
     let newProjectDesc_val = newProjectDesc.value

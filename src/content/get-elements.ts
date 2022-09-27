@@ -18,7 +18,7 @@ function checkSyntax(elementArr: Element[]): void {
         if (element.localName !== 'script') {
             let nodes = element.childNodes
             nodes.forEach(node => {
-                if (node.nodeValue !== null && node.nodeValue.includes('https://voisascript.com')) {
+                if (node.nodeValue !== null && node.nodeValue.includes('http://localhost:5000')) {
                     let text = `${node?.textContent?.split('//')[1]}//${node?.textContent?.split('//')[2]}` 
                     valueArr.push({element: element, ID: `${element.id}`, text: `${text}`})
                 }

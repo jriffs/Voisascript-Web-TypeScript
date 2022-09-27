@@ -6,7 +6,7 @@ export function audioControl() {
     rewind_buttons = document.querySelectorAll('.rewind')!,
     forward_buttons = document.querySelectorAll('.forward')!,
     play_buttons = document.querySelectorAll('.audio-control')
-
+    
 
     function visibility_toggle(target: Element) {
         target.classList.toggle('show')

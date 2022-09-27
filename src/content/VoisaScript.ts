@@ -18,15 +18,16 @@ function checkNchange() {
     console.log('hovered over body !!!')
     if (getElementsWithKeywords(elements).length > 0) {
         let content = getElementsWithKeywords(elements)
-        changeElement(content, body, checkNchange)
-        audioControl()
+        changeElement(content, body, checkNchange).finally(() => {
+            audioControl()
+        })
         console.log('done with changing link to V-audio !!')
         return
     }            
 }
 
 body.addEventListener('mouseover', checkNchange)
-    
+
 async function InitializeAudio(): Promise<void> {
     let audioIN = { audio: true }
     try {

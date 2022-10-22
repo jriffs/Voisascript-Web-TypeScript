@@ -1,19 +1,18 @@
 import { cmc, userProjects, userFiles, userData } from "../interfaces/interfaces"
 import Browser from "webextension-polyfill"
 import { switchTabs } from "./tabSelect"
+import { convertURIToBinary } from "../misc/file-extract";
 
 const body = document.body
-const http = new XMLHttpRequest()
 const fileActionArea = document.querySelector('.file-action')!
 const createProjectButton = document.querySelector('#create-project')!
 const projectCreateDiv = document.querySelector('#project-create')!
 const projectSelect = document.querySelector('#choose-project')!
 const recordAudioButton = document.querySelector('#audio-mic')!
-const saveButton = document.querySelector('#save-button')!
+const stopButton = document.querySelector('#save-button')!
 const animatedBars = document.querySelector('.animated-bars')!
 const saveButtonLogo = document.querySelector('.button-logo')!
 const audioFileHolder = document.querySelector('#audio-file-holder') as HTMLInputElement
-const chooseFileButton = document.querySelector('#choose-file-btn')!
 const uploadButton = document.querySelector('#upload-btn')!
 const copyButton = document.querySelector('#copy-button')!
 const linkHolder = document.querySelector('#copy-input') as HTMLInputElement
@@ -22,9 +21,11 @@ const fileNameHolder = document.querySelector('#choose-file-btn>p')!
 const signInArea = document.querySelector('#sign-in-area')!
 const signInButton = document.querySelector('#sign-in')!
 let project_count = document.querySelector('#projects')!,
-files_count = document.querySelector('#files')!,
-username = document.querySelector('#username')!
+    files_count = document.querySelector('#files')!,
+    username = document.querySelector('#username')!
 const tab_buttons = document.querySelectorAll('.tab')
+const fileNameInput = document.querySelector('#audiofile-name') as HTMLInputElement
+let _audio: Blob
 // cleardata()
 checkIfUser()
 
@@ -43,7 +44,7 @@ tab_buttons.forEach((tab) => {
 })
 
 async function checkIfUser() {
-    const {userData} = await Browser.storage.local.get('userData')
+    const { userData } = await Browser.storage.local.get('userData')
     if (userData) {
         signInArea.classList.toggle('hidden')
         fileActionArea.classList.toggle('hidden')
@@ -51,7 +52,7 @@ async function checkIfUser() {
     }
 }
 
-signInButton.addEventListener('click', async(e) => {
+signInButton.addEventListener('click', async (e) => {
     e.preventDefault()
     const [tab] = await Browser.tabs.query({
         currentWindow: true,
@@ -98,13 +99,13 @@ async function updateUserData(bearer: string, Data: userData) {
             files: Data.stats.files
         }
     }
-    await Browser.storage.local.set({userData: data})
+    await Browser.storage.local.set({ userData: data })
 }
 
 async function UpdateUI() {
     console.log('UI being updated')
     // get data from local storage.
-    const {userData} = await Browser.storage.local.get('userData')
+    const { userData } = await Browser.storage.local.get('userData')
 
     project_count.textContent = userData.stats.projects
     files_count.textContent = userData.stats.files
@@ -129,27 +130,27 @@ async function communicateWithContent(message: cmc) {
         const tab = tabs[0]
         const received = await Browser.tabs.sendMessage(
             tab.id ?? 0,
-            {action: message}
+            { action: message }
         )
-        return received.recorderState
+        return received
     } catch (e) {
         alert(e)
-    } 
+    }
 }
 
-createProjectButton.addEventListener('click', (e)=>{
+createProjectButton.addEventListener('click', (e) => {
     e.preventDefault()
-    
+
     if (createProjectButton.textContent == 'create new project') {
         projectCreateDiv.classList.toggle('hidden')
-        projectCreateDiv.querySelectorAll('input').forEach(input =>{
+        projectCreateDiv.querySelectorAll('input').forEach(input => {
             input.toggleAttribute('disabled')
         })
         projectSelect.toggleAttribute('disabled')
         createProjectButton.textContent = 'cancel'
-    }else {
+    } else {
         projectCreateDiv.classList.toggle('hidden')
-        projectCreateDiv.querySelectorAll('input').forEach(input =>{
+        projectCreateDiv.querySelectorAll('input').forEach(input => {
             input.toggleAttribute('disabled')
             input.value = ''
         })
@@ -158,11 +159,12 @@ createProjectButton.addEventListener('click', (e)=>{
     }
 })
 
-recordAudioButton.addEventListener('click', async (e)=>{
+recordAudioButton.addEventListener('click', async (e) => {
     e.preventDefault()
     const recorderState = await communicateWithContent('retreive')
+    console.log(recorderState)
     if (recorderState) {
-        switch (recorderState) {
+        switch (recorderState.recorderState) {
             case 'paused':
                 await communicateWithContent('resume')
                 recordAudioButton.childNodes[3].textContent = 'Recording...'
@@ -179,64 +181,72 @@ recordAudioButton.addEventListener('click', async (e)=>{
                 break;
             case 'inactive':
                 await communicateWithContent('start')
-                saveButton.toggleAttribute('disabled')
+                stopButton.toggleAttribute('disabled')
                 recordAudioButton.childNodes[3].textContent = 'Recording...'
                 animatedBars.classList.toggle('hidden')
                 saveButtonLogo.classList.toggle('recording')
                 break;
         }
-        return 
+        return
     }
     alert('Microphone permission is not enabled, please refresh page and select allow')
 })
 
-saveButton.addEventListener('click', async (e) =>{
+stopButton.addEventListener('click', async (e) => {
     e.preventDefault()
     const recorderState = await communicateWithContent('retreive')
-    if (recorderState != 'inactive') {
+    console.log(recorderState.recorderState)
+    if (recorderState.recorderState != 'inactive') {
         let newRecorderState = await communicateWithContent('stop')
-        if (newRecorderState == 'inactive') {
-            for (const element of animatedBars.children) {
-                element.classList.toggle('up-down')
+        if (newRecorderState.recorderState == 'inactive') {
+            const { audioBlobText } = await communicateWithContent('retreive')
+            if (audioBlobText) {
+                console.log(audioBlobText)
+                let binary = convertURIToBinary(audioBlobText)
+                let audioBlob = new Blob([binary], {type: 'audio/webm'})
+                // console.log(audioBlob)
+                _audio = audioBlob
+                for (const element of animatedBars.children) {
+                    element.classList.toggle('up-down')
+                }
+                animatedBars.classList.toggle('hidden')
+                saveButtonLogo.classList.toggle('recording')
+                recordAudioButton.childNodes[3].textContent = 'Record Audio'
+                recordAudioButton.toggleAttribute('disabled')
+                if (saveFileArea.classList.contains('hidden')) {
+                    saveFileArea.classList.toggle('hidden')
+                }
+                stopButton.toggleAttribute('disabled')
+                return
             }
-            animatedBars.classList.toggle('hidden')
-            saveButtonLogo.classList.toggle('recording')
-            recordAudioButton.childNodes[3].textContent = 'Record Audio'
-            recordAudioButton.toggleAttribute('disabled')
-            if (saveFileArea.classList.contains('hidden')) {
-                saveFileArea.classList.toggle('hidden')
-            }
-            saveButton.toggleAttribute('disabled')
+            alert('no audioBlobText')
+            return            
         }
-         
+        alert('error stoping recorder')
     }
 })
 
-chooseFileButton.addEventListener('click', (e) => {
-    e.preventDefault()
-    audioFileHolder.click()
-})
-
-audioFileHolder.addEventListener('input', () => {
-    let file_name = audioFileHolder.value.split('\\')[2]
-    if (checkIfAudio(file_name)) {
-        fileNameHolder.textContent = file_name
+fileNameInput.addEventListener('keyup', () => {
+    if (fileNameInput.value && fileNameInput.value.split('').length >= 8) {
+        if (uploadButton.classList.contains('hidden')) {
+            uploadButton.classList.toggle('hidden')
+            return
+        }
+        return
+    }
+    if (!uploadButton.classList.contains('hidden')) {
         uploadButton.classList.toggle('hidden')
         return
     }
-    alert('Please select the audio file you just recorded & downloaded')
-    if (!uploadButton.classList.contains('hidden')) {
-        uploadButton.classList.toggle('hidden')
-    }
-    fileNameHolder.textContent = ''
 })
 
 uploadButton.addEventListener('click', async (e) => {
     e.preventDefault()
     let form = document.querySelector('form') as HTMLFormElement
     let data = new FormData(form)
-    const {userData} = await Browser.storage.local.get('userData')
-    const {userToken} = userData
+    data.append('audio', _audio, fileNameInput.value)
+    const { userData } = await Browser.storage.local.get('userData')
+    const { userToken } = userData
     if (validate()) {
         const headers = {
             authorization: `Bearer ${userToken}`,
@@ -260,10 +270,10 @@ uploadButton.addEventListener('click', async (e) => {
             recordAudioButton.toggleAttribute('disabled')
             uploadButton.classList.toggle('hidden')
             saveFileArea.classList.toggle('hidden')
-            return 
+            return
         }
         alert(`Server Response:${response.status} -- ${JSON.stringify(ResponseData)}`)
-        return 
+        return
     }
     alert('Please choose an existing project or Create a new one')
 })
@@ -277,7 +287,7 @@ copyButton.addEventListener('click', (e) => {
 
 function checkIfAudio(file_name: string) {
     let filename_Extension: string = file_name.split('.')[1]
-    let acceptedExtensions: string[] = ['mp3', 'wav']
+    let acceptedExtensions: string[] = ['mp3', 'wav', 'webm']
     if (acceptedExtensions.includes(filename_Extension)) {
         return true
     }

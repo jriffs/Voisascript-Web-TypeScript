@@ -83,12 +83,11 @@
                                 <div class="bar up-down"></div>
                             </div>
                         </button>
-                        <button type="submit" id="save-button" class="" disabled>save</button>
+                        <button type="submit" id="save-button" class="" disabled>Stop</button>
                     </div>
                     <div class="file-holder hidden">
-                        <button class="choose-file-btn" id="choose-file-btn">Choose File<p></p></button>
+                        <input type="text" name="file-name" id="audiofile-name" placeholder="Enter File Name">
                         <button class="upload-btn hidden" id="upload-btn">Upload</button>
-                        <input type="file" name="audio" id="audio-file-holder" class="" accept="audio/mp3" hidden>
                     </div>
                 </form>
             </div>
@@ -130,5 +129,8 @@
                 <p>copyright VoisaScript.com</p>
             </div>
     </section>
+    <div hidden="true">
+        <a href="" id="file-download"></a>
+    </div>
 </body>
 </html>

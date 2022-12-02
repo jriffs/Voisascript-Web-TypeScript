@@ -1,4 +1,4 @@
-import { cmc, userProjects, userFiles, userData } from "../interfaces/interfaces"
+/* import { cmc, userProjects, userFiles, userData } from "../interfaces/interfaces"
 import Browser from "webextension-polyfill"
 import { switchTabs } from "./tabSelect"
 import { convertURIToBinary } from "../misc/file-extract";
@@ -321,3 +321,12 @@ async function cleardata() {
     await Browser.storage.local.clear()
 }
 
+ */
+
+import App from "./App.svelte";
+
+const app: App = new App({
+    target: document.body
+})
+
+export default app

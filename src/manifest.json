@@ -1,62 +1,64 @@
 {
 
-    "manifest_version": 2,
-    "name": "VoisaScript",
-    "version": "1.0.0",
-  
-    "description": "Record and Play audio comments.",
-  
-    "icons": {
-      "48": "icons/V2-2.png"
-    },
-  
-    "content_scripts": [
-      {
-        "matches": ["*://*.github.com/*", "*://*.gitlab.com/*"],
-        "js": [
-            "content/VoisaScript.ts"
-        ],
-        "run_at": "document_idle",
-        "css": [
-          "css/link-convert.css"
-        ]
-      }
-    ],
+  "manifest_version": 2,
+  "name": "VoisaScript",
+  "version": "1.0.0",
 
-    "background": {
-      "scripts": [
-        "background/background.ts"
+  "description": "Record and Play audio comments.",
+
+  "icons": {
+    "48": "icons/V2-2.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.github.com/*", "*://*.gitlab.com/*"],
+      "js": [
+          "content/VoisaScript.ts"
+      ],
+      "run_at": "document_idle",
+      "css": [
+        "css/link-convert.css"
       ]
-    },
+    }
+  ],
 
-    "browser_action": {
-      "browser_style": true,
-      "default_icon": {
-        "16": "icons/Voisascript 1-1(16).png",
-        "32": "icons/Voisascript 1-1(32).png"
-      },
-      "default_title": "VoisaScript",
-      "default_popup": "popup/popup.html"      
-    },
-    
-    "permissions": [
-      "webRequest",
-      "contextMenus",
-      "storage",
-      "tabs",
-      "webRequestBlocking",
-      "<all_urls>",
-      "browsingData" 
-    ],
-
-    "web_accessible_resources": [
-      "/icons/Voisascript-1-1.png",
-      "/icons/Voisascript 1-1(16).png",
-      "/icons/content/icons8-fast-forward-64.png",
-      "/icons/content/icons8-play-64.png",
-      "/icons/content/icons8-pause-64.png",
-      "/icons/content/icons8-rewind-64.png"
+  "background": {
+    "scripts": [
+      "background/background.ts"
     ]
+  },
+
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": {
+      "16": "icons/Voisascript 1-1(16).png",
+      "32": "icons/Voisascript 1-1(32).png"
+    },
+    "default_title": "VoisaScript",
+    "default_popup": "popup/popup.html"      
+  },
+  
+  "permissions": [
+    "webRequest",
+    "contextMenus",
+    "storage",
+    "tabs",
+    "webRequestBlocking",
+    "<all_urls>",
+    "browsingData" 
+  ],
+
+  "web_accessible_resources": [
+    "/icons/Voisascript-1-1.png",
+    "/icons/Voisascript 1-1(16).png",
+    "/icons/content/icons8-fast-forward-64.png",
+    "/icons/content/icons8-play-64.png",
+    "/icons/content/icons8-pause-64.png",
+    "/icons/content/icons8-rewind-64.png"
+  ],
+
+  "content_security_policy": "default-src 'self'; style-src 'unsafe-inline';"
   
 }
   

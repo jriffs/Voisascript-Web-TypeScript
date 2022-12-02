@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src *;font-src *; script-src-elem *; img-src * data: https:; style-src * ; script-src *">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src *;font-src *; script-src-elem *; img-src * data: https:; style-src 'unsafe-inline' https://fonts.googleapis.com; script-src *">
     <title>pop-up</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link rel="stylesheet" href="Global-style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Edu+VIC+WA+NT+Beginner:wght@400;500;600;700&family=Lobster&family=Mochiy+Pop+One&family=Rajdhani:wght@300;400;500;600;700&family=Righteous&family=Satisfy&display=swap" rel="stylesheet">
@@ -14,123 +15,6 @@
     <script src="popup.ts" type="module" defer></script>
 </head>
 <body>
-    <header>
-        <div class="logo-area">
-            <img src="../icons/V2-2.png" alt="VoisaScript Logo" class="header-logo">
-        </div>
-        <div class="tab-area">
-            <div class="tab"><p>Record Audio</p></div>
-            <div class="tab active"><p>Manage Projects</p></div>
-        </div>
-    </header>
-    <main id="audio-action" class="hidden">
-        <section class="main">
-            <div class="salutation">
-                <h3>Hi <span id="username">User</span></h3>
-            </div>
-            <div class="stats">
-                <div class="statbox">
-                    <div class="statnumber" id="projects"><h2>0</h2></div>
-                    <div class="statitem"><h4>Projects</h4></div>
-                </div>
-                <div class="statbox">
-                    <div class=""></div>
-                    <div class=""></div>
-                </div>
-                <div class="statbox">
-                    <div class="statnumber" id="files"><h2>0</h2></div>
-                    <div class="statitem"><h4>Audio Files</h4></div>
-                </div>
-            </div>
-            <!-- <div class="call-to-action">
-                <button id="call-to-action-btn">create recording</button>
-            </div> -->
-        </section>
-        <section id="sign-in-area">
-            <div class="sign-in-area">
-                <div class="input-flex">
-                    <button id="sign-in">Sign-In</button>
-                </div>
-            </div>
-        </section>
-        <section class="file-action hidden">
-            <div class="upload-header">
-                <h3>Record VoisaScript Audio</h3>
-            </div>
-            <div class="file-upload-form">
-                <form action="" method="post" id="file-upload-form">
-                    <div class="choose-project-div">
-                        <select name="project" id="choose-project">
-                            <option value="">Choose Project</option>
-                        </select>
-                        <div class="or-divider">OR</div>
-                        <button id="create-project">create new project</button>
-                    </div>
-                    <div class="project-create hidden" id="project-create">
-                        <input type="text" name="newProjectName" id="project-name" placeholder="Project Name" disabled>
-                        <input type="text" name="newProjectDesc" id="project-desc" placeholder="Project Description" disabled>
-                    </div>
-                    <div class="record-audio">
-                        <button id="audio-mic">
-                            <div class="button-logo">.</div>
-                            <p class="">Record Audio</p>
-                            <div class="animated-bars hidden">
-                                <div class="bar up-down"></div>
-                                <div class="bar up-down"></div>
-                                <div class="bar up-down"></div>
-                                <div class="bar up-down"></div>
-                                <div class="bar up-down"></div>
-                                <div class="bar up-down"></div>
-                            </div>
-                        </button>
-                        <button type="submit" id="save-button" class="" disabled>Stop</button>
-                    </div>
-                    <div class="file-holder hidden">
-                        <input type="text" name="file-name" id="audiofile-name" placeholder="Enter File Name">
-                        <button class="upload-btn hidden" id="upload-btn">Upload</button>
-                    </div>
-                </form>
-            </div>
-            <div class="file-link-area">
-                <div class="copy-paste-heading">
-                    <h4>copy audio-file link to clipboard</h4>
-                </div>
-                <div class="copy-paste-div">
-                    <button class="copy-button" id="copy-button"><img src="https://img.icons8.com/material-rounded/24/000000/copy.png" alt=""></button>
-                    <input type="text" name="copy-input" id="copy-input" class="copy-input">
-                </div>
-            </div>
-        </section>
-    </main>
-    <main id="manage" class="tab-active">
-        <div class="manage-projects-area">
-            <h3>manage projects</h3>
-            <div class="manage-projects-div">
-                <select name="manage-projects" id="" class="manage-project-select">
-                    <option value="">choose project</option>
-                </select>
-                <button id="project-rename">Rename</button>
-                <button id="project-delete">Delete</button>
-            </div>
-            <div class="update-project-area hidden">
-                <input type="text" name="" id="">
-                <input type="text" name="" id="">
-                <button id="project-update">Update</button>
-            </div>
-        </div>
-    </main>
-    <section class="footer">
-            <div class="curve">
-                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                    <path d="M0,0V6c0,21.6,291,111.46,741,110.26,445.39,3.6,459-88.3,459-110.26V0Z" class="shape-fill"></path>
-                </svg>
-            </div>        
-            <div>
-                <p>copyright VoisaScript.com</p>
-            </div>
-    </section>
-    <div hidden="true">
-        <a href="" id="file-download"></a>
-    </div>
+    
 </body>
 </html>

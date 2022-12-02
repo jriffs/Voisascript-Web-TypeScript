@@ -6,6 +6,9 @@
     "start": "parcel watch src/manifest.json --host localhost --config @parcel/config-webextension",
     "build": "parcel build src/manifest.json --config @parcel/config-webextension"
   },
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
   "keywords": [
     "VoisaScript"
   ],
@@ -13,11 +16,19 @@
   "license": "ISC",
   "devDependencies": {
     "@parcel/config-webextension": "^2.7.0",
+    "@tsconfig/svelte": "^3.0.0",
     "@types/node": "^18.6.2",
     "@types/wavesurfer.js": "^6.0.3",
-    "parcel": "^2.7.0",
+    "assert": "^2.0.0",
+    "console-browserify": "^1.2.0",
+    "parcel": "^2.8.0",
+    "parcel-transformer-svelte": "^1.2.3",
+    "parcel-transformer-svelte3-plus": "^0.2.8",
+    "svelte-check": "^2.9.2",
+    "svelte-preprocess": "^4.10.7",
     "ts-loader": "^9.3.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.9.3",
+    "util": "^0.12.5"
   },
   "dependencies": {
     "@types/webextension-polyfill": "^0.9.0",
@@ -25,5 +36,6 @@
     "lamejstmp": "^1.0.1",
     "wavesurfer.js": "^6.3.0",
     "webextension-polyfill": "^0.10.0"
-  }
+  },
+  "type": "module"
 }

@@ -1,9 +1,11 @@
 <script lang="ts">
     import { userData } from "../../interfaces/interfaces";
     import Browser from "webextension-polyfill";
-    import { createEventDispatcher } from "svelte";
+    // import { createEventDispatcher } from "svelte";
     import { fade } from "svelte/transition";
-    const dispatch = createEventDispatcher();
+    import { notify } from "../notification";
+    import { screen } from "../store";
+    // const dispatch = createEventDispatcher();
     async function handleSignIn() {
         try {
             const [tab] = await Browser.tabs.query({
@@ -11,16 +13,20 @@
                 active: true
             })
             if (!tab.url) {
-                dispatch('sign-in', {success: false, error: 'Please Restart Browser'})
+                notify({
+                    type: 'error',
+                    message: `System Error: Please Restart Browser`,
+                    delay: 4
+                })
                 return
             }
-            if (tab.url.split('//')[1].includes('voisascript.com/auth/ext?Bearer=')) {
+            if (tab?.url?.split('//')[1]?.includes('voisascript.com/auth/ext?Bearer=')) {
                 let bearer = tab.url.split('//')[1].split('=')[1]
                 const headers = {
                     "authorization": `Bearer ${bearer}`,
                     "originator": `extension`
                 }
-                const response = await fetch('http://localhost:3000/user/validate', {
+                const response = await fetch('http://localhost:3000/user/validate?sign-in=true', {
                     method: 'GET',
                     // mode: 'no-cors',
                     headers: headers
@@ -28,37 +34,71 @@
                 const userData = await response.json()
                 if (response.ok === true) {
                     console.log(userData)
-                    const user_data = userData.userData
-                    const data = {
-                        bearer,
-                        user_data
-                    }
-                    dispatch('sign-in', {success: true, data})
+                    updateUserData(bearer, userData.userData, userData.username).then(() => {
+                        notify({
+                            type: 'success',
+                            message: `Signed In Successfully`,
+                            delay: 3
+                        })
+                        setTimeout(() => {
+                        screen.set('dashboard') 
+                        }, 2000);
+                    })
                     return
                 }
-                dispatch('sign-in', {success: false, error: 'Network Failure, please check your network connection'})
+                notify({
+                    type: 'error',
+                    message: `Network Failure, please check your network connection`,
+                    delay: 4
+                })
                 return
             }
-            dispatch('sign-in', {success: false, error: 'please go to VoisaScript.com for instructions on how to sign-in'})
+            notify({
+                type: 'error',
+                message: `Please go to VoisaScript.com for instructions on how to sign-in`,
+                delay: 4
+            })
         } catch (e) {
-            dispatch('sign-in', {success: false, error: e})
+            notify({
+                type: 'error',
+                message: `${e}`,
+                delay: 3
+            })    
         }
+    }
+
+    async function updateUserData(bearer: string, Data: userData, username: string) {
+        const data = {
+            userToken: bearer,
+            username,
+            isLoggedIn: true,
+            projects: Data.projects,
+            files: Data.files,
+            stats: {
+                projects: Data.stats.projects,
+                files: Data.stats.files
+            }
+        }
+        await Browser.storage.local.set({ userData: data })
     }
 </script>
 
-<div transition:fade class="main-content">
-    <div class="logo">
-        <img src="../icons/V2-2.png" alt="voisacript logo" />
+{#if $screen === 'sign-in'}
+    <div transition:fade class="main-content">
+        <div class="logo">
+            <img src="../icons/V2-2.png" alt="voisacript logo" />
+        </div>
+        <div class="content">
+            <h2>Lorem Ipsum is simply dummy text</h2>
+            <p>
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry
+            </p>
+            <button on:click={handleSignIn}>Sign-In</button>
+        </div>
     </div>
-    <div class="content">
-        <h2>Lorem Ipsum is simply dummy text</h2>
-        <p>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry
-        </p>
-        <button on:click={handleSignIn}>Sign-In</button>
-    </div>
-</div>
+{/if}
+
 
 <style>
     .main-content {

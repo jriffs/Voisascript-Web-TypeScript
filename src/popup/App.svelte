@@ -6,11 +6,11 @@
     import SignIn from "./sign-in page/sign-in.svelte";
     import Notification from "./notification/notification.svelte";
     import Dashboard from "./dashboard/dashboard.svelte";
+    import FirstRecordScreen from "./record-audio/record-area-1.svelte";
 
-    let data: unknown
-    
+    // let data: unknown
 
-    async function getUserData() {
+    async function checkIfUser() {
         const { userData } = await Browser.storage.local.get('userData')
         if (userData) {
             screen.set('dashboard')
@@ -18,9 +18,9 @@
         }
         screen.set('sign-in')
     }
-    getUserData()
+    checkIfUser()
 
-    function handleSignIn(e: any) {
+    /* function handleSignIn(e: any) {
         let {success, error, data} = e.detail
         if (success === true) {
             notification.set({
@@ -37,20 +37,12 @@
                 message: `${error}`
             })
         }
-    }
+    } */
 </script>
 
 <main>
-    {#if $screen === 'sign-in'}
-        <SignIn on:sign-in={handleSignIn}/>
-    {/if}
-
-    {#if $screen === 'dashboard'}
-        <Dashboard/>
-    {/if}
-
-
-    {#if $notification.show}
-        <Notification/>
-    {/if}
+    <SignIn/>
+    <Dashboard/>
+    <Notification/>
+    <FirstRecordScreen/>
 </main>

@@ -9,3 +9,11 @@ export const notification = writable(
 );
 
 export const screen = writable('')
+
+export const recordParams = writable(
+    {
+        Recorderstate: '',
+        projectID: '',
+        fileName: ''
+    }
+);

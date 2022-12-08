@@ -29,79 +29,6 @@ let _audio: Blob
 // cleardata()
 checkIfUser()
 
-tab_buttons.forEach((tab) => {
-    tab.addEventListener('click', () => {
-        if (!tab.classList.contains('active')) {
-            tab.classList.toggle('active')
-            if (tab.nextElementSibling) {
-                tab.nextElementSibling.classList.toggle('active')
-            } else {
-                tab?.previousElementSibling?.classList.toggle('active')
-            }
-            switchTabs(body)
-        }
-    })
-})
-
-async function checkIfUser() {
-    const { userData } = await Browser.storage.local.get('userData')
-    if (userData) {
-        signInArea.classList.toggle('hidden')
-        fileActionArea.classList.toggle('hidden')
-        await UpdateUI()
-    }
-}
-
-signInButton.addEventListener('click', async (e) => {
-    e.preventDefault()
-    const [tab] = await Browser.tabs.query({
-        currentWindow: true,
-        active: true
-    })
-    if (!tab.url) {
-        alert('Internal Error: Please Restart Browser')
-        return
-    }
-    if (tab.url.split('//')[1].includes('voisascript.com/auth/ext?Bearer=')) {
-        let bearer = tab.url.split('//')[1].split('=')[1]
-        const headers = {
-            "authorization": `Bearer ${bearer}`,
-            "originator": `extension`
-        }
-        const response = await fetch('http://localhost:3000/user/validate', {
-            method: 'GET',
-            // mode: 'no-cors',
-            headers: headers
-        })
-        const userData = await response.json()
-        if (response.ok === true) {
-            console.log(userData)
-            updateUserData(bearer, userData.userData).then(() => {
-                alert('Sign-In Successful 👍')
-                checkIfUser()
-            })
-            return
-        }
-        return
-    }
-    alert(`😭 Sign-In Error: please go to VoisaScript.com for instructions on how to sign-in`)
-})
-
-async function updateUserData(bearer: string, Data: userData) {
-    const data = {
-        userToken: bearer,
-        username: Data.username,
-        isLoggedIn: true,
-        projects: Data.projects,
-        files: Data.files,
-        stats: {
-            projects: Data.stats.projects,
-            files: Data.stats.files
-        }
-    }
-    await Browser.storage.local.set({ userData: data })
-}
-
 async function UpdateUI() {
     console.log('UI being updated')
     // get data from local storage.
@@ -324,9 +251,16 @@ async function cleardata() {
  */
 
 import App from "./App.svelte";
+// import Browser from "webextension-polyfill"
 
 const app: App = new App({
     target: document.body
 })
 
 export default app
+
+// async function clearData() {
+//     await Browser.storage.local.remove('userData')
+// }
+
+// clearData()

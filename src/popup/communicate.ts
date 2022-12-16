@@ -11,7 +11,7 @@ export async function communicateWithContent(message: cmc) {
         const received = await Browser.tabs.sendMessage(
             tab.id ?? 0,
             { action: message }
-        )
+        )        
         return {received}
     } catch (error) {
         return {error}

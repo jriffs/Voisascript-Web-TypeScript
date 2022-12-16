@@ -2,8 +2,9 @@ import { audioControl } from "./audio-control"
 import { changeElement } from "./change"
 import { getElementsWithKeywords } from "./get-elements"
 import Browser from "webextension-polyfill"
-import { OnMessageRequestValue } from "src/interfaces/interfaces"
+import { OnMessageRequestValue, callback } from "src/interfaces/interfaces"
 import { WAS } from "./wavesurfer-audio"
+import { Events } from "../events";
 
 // perform task only when user moves mouse over document body
 const body = document.body
@@ -17,14 +18,19 @@ let testSending: any
 createRecordArea()
 InitializeAudio()
 
-function checkNchange() {
+function checkNchange(this: HTMLElement, ev: MouseEvent) {
+    console.log('hovered over body')
     if (getElementsWithKeywords(elements).length > 0) {
         let content = getElementsWithKeywords(elements)
-        changeElement(content, body, checkNchange).finally(() => {
-            audioControl()
+        changeElement(content).then((result) => {
+            if (result.update == 'change successful') {
+                audioControl()            
+                this.removeEventListener('mouseover', checkNchange)               
+            } 
         })
         return
-    }            
+    }
+    this.removeEventListener('mouseover', checkNchange)            
 }
 
 body.addEventListener('mouseover', checkNchange)
@@ -46,7 +52,7 @@ function createRecordArea(): void {
     body.appendChild(recordArea)
 }
 
-Browser.runtime.onMessage.addListener( async (request: OnMessageRequestValue) => {
+Browser.runtime.onMessage.addListener( async (request: OnMessageRequestValue) => {    
     switch (request.action) {
         case 'start':
             // recorder.start()
@@ -63,22 +69,23 @@ Browser.runtime.onMessage.addListener( async (request: OnMessageRequestValue) =>
             return Promise.resolve({recorderState: was.state()})
             break;
         case 'stop':
-            // recorder.stop()
             was.stopRecording()
-            // return Promise.resolve({recorderState: recorder.state})
-            return Promise.resolve({recorderState: was.state()})
-            break;
-        case 'retreive':
-            if (was.state() == 'inactive' && was.buff()) {
+            if (was.state() == 'inactive' && was.buff()) {               
                 const reader = new FileReader()
-                reader.onload = function(event){
+                reader.onload = function (event: ProgressEvent<FileReader>){                    
                     testSending = event?.target?.result
                 }
                 const audBlob = was.buff() as Blob
                 reader.readAsDataURL(audBlob)
-                return Promise.resolve({recorderState: was.state(), audioBlobText: testSending})
             }
             return Promise.resolve({recorderState: was.state()})
+            break;
+        case 'retreive':
+            return Promise.resolve({recorderState: was.state()})
+            break;
+        case 'review':
+            console.log(`testsending has something in it -> ${(testSending)}`)            
+            return Promise.resolve({recorderState: was.state(), audioBlobText: testSending})          
             break;
         case 'resume':
             // recorder.resume()

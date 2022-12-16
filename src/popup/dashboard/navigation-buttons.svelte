@@ -1,20 +1,20 @@
 <script lang="ts">
     import { screen } from "../store";
-    export let placeholderText: string
+    import BtnSecondary from "../buttons/button-secondary.svelte";
+    export let placeholderText: string, currentScreen = $screen.current
     function handleButtonClick() {
         const text = `${placeholderText}`
-        screen.set(text)
+        screen.set({current: text, previous: currentScreen})
     }
 </script>
-
-<button on:click={handleButtonClick}>{placeholderText}</button>
+<BtnSecondary BtnText={placeholderText} func={handleButtonClick}/>
 
 <style>
     
-    button {
+    /* button {
         margin-inline: 10px;
         padding: 10px;
         border-radius: 4px;
         border: transparent;
-    }
+    } */
 </style>

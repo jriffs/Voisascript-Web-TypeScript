@@ -11,10 +11,12 @@
 <div class="header">
     <div class="logo">
         <img src="../icons/V2-2.png" alt="voisacript logo" />
+        <h5>Voisascript</h5>
     </div>
-    <div class="user-avatar">
-        <h3 class="username">{username}</h3>
-        <img src="../icons/user1.jpg" alt="user" />
+    <div class="settings-area">
+        <button>
+           <img src="../icons/settings.svg" alt="settings" /> 
+        </button>
     </div>
 </div>
 
@@ -26,19 +28,35 @@
         align-items: center;
         min-width: 100%;
         min-height: 55px;
-        border-bottom: 1px solid #000000;
+        /* border-bottom: 1px solid #000000; */
+        box-shadow:
+        0px 0.9px 2.6px -5px rgba(0, 0, 0, 0.015),
+        0px 7px 25px -5px rgba(0, 0, 0, 0.03)
+        ;
     }
     .logo {
+        width: 100%;
+        min-height: fit-content;
+        /* padding: 10px; */
         display: flex;
-        justify-content: center;
+        flex-direction: row;
+        justify-content: start;
         align-items: center;
-        max-height: 70%;
-        margin-left: 10px;
+    }
+    .logo h5{
+        font-family:  'Space Grotesk';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 24px;
+        margin-inline-start: 10px;
+        color: #021931;  
     }
     .logo img {
-        max-height: 40px;
+        width: 40px;
+        height: 40px;
+        margin-inline-start: 35px;
     }
-    .user-avatar {
+    .settings-area {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -46,9 +64,14 @@
         min-width: 15%;
         padding-inline: 10px;
     }
-    .user-avatar img {
+    .settings-area button{
+        border-radius: 50%;
+        border: transparent;
+        padding: 8px;
+    }
+    .settings-area button img {
         border-radius: 50%;
         max-height: 30px;
-        border: 2px solid black;
+        /* border: 2px solid black; */
     }
 </style>

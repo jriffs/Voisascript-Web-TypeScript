@@ -6,14 +6,24 @@ export const notification = writable(
         type: '',
         message: ''
     }
-);
+)
 
-export const screen = writable('')
-
+export const screen = writable({
+    current: '',
+    previous: ''
+})
+let Recorderstate: string = '', project: string = '', fileName: string = '', file: Blob | null | undefined
 export const recordParams = writable(
     {
-        Recorderstate: '',
-        projectID: '',
-        fileName: ''
+        Recorderstate,
+        project,
+        fileName,
+        file
     }
-);
+)
+
+export const history = writable({
+    record: ['dashboard', 'Record audio', 'Record audio 2', 'Record audio 3'],
+    projects: ['dashboard', 'Manage projects'],
+    files: ['']
+})

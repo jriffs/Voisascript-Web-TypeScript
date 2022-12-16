@@ -41,7 +41,7 @@
                             delay: 3
                         })
                         setTimeout(() => {
-                        screen.set('dashboard') 
+                            screen.set({current: 'dashboard', previous: ''}) 
                         }, 2000);
                     })
                     return
@@ -83,18 +83,20 @@
     }
 </script>
 
-{#if $screen === 'sign-in'}
+{#if $screen.current === 'sign-in'}
     <div transition:fade class="main-content">
         <div class="logo">
             <img src="../icons/V2-2.png" alt="voisacript logo" />
+            <h5>Voisascript</h5>
         </div>
         <div class="content">
-            <h2>Lorem Ipsum is simply dummy text</h2>
+            <h1>The best way to express yourself</h1>
             <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry
+                Voisascript removes the stress of constructing lines of comments by giving you the freedom to express yourself in your own voice.
             </p>
-            <button on:click={handleSignIn}>Sign-In</button>
+            <div class="button-holder">
+                <button on:click={handleSignIn}>Sign-In</button>
+            </div>
         </div>
     </div>
 {/if}
@@ -112,35 +114,64 @@
     .logo {
         width: 100%;
         min-height: fit-content;
-        padding: 10px;
+        /* padding: 10px; */
         display: flex;
         flex-direction: row;
-        justify-content: center;
+        justify-content: start;
         align-items: center;
     }
+    .logo h5{
+        font-family:  'Space Grotesk';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 24px;
+        margin-inline-start: 10px;
+        color: #021931;  
+    }
     .logo img {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
+        margin-inline-start: 55px;
     }
     .content {
         margin-block: 60px;
-        width: 70%;
+        width: 80%;
         height: 200px;
         display: flex;
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
     }
-    .content h2 {
-        font-size: 30px;
-        margin-bottom: -5px;
+    .content h1 {
+        /* font-size: 30px;
+        margin-bottom: -5px; */
+        font-family:  'Space Grotesk';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 40px;
+        line-height: 48px;
+        letter-spacing: -0.02em;
+        color: #021931;
     }
     .content p {
         font-size: 14px;
         margin-bottom: 60px;
+        font-family:  'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 24px;
+        color: #2c3f53;
     }
-    .content button {
-        width: 100%;
+    .content .button-holder{
+        min-width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    .content .button-holder button {
+        width: 50%;
         padding: 10px;
         text-align: center;
         font-size: 16px;
@@ -148,5 +179,13 @@
         outline: none;
         border-color: transparent;
         cursor: pointer;
+        background: #2288f4;
+        color: #ffffff;
+        font-family: 'Space Grotesk';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 23px;
+        letter-spacing: 0.005em;
     }
 </style>

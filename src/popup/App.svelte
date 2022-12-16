@@ -7,37 +7,19 @@
     import Notification from "./notification/notification.svelte";
     import Dashboard from "./dashboard/dashboard.svelte";
     import FirstRecordScreen from "./record-audio/record-area-1.svelte";
+    import SecondRecordScreen from "./record-audio/record-area-2.svelte";
 
     // let data: unknown
 
     async function checkIfUser() {
         const { userData } = await Browser.storage.local.get('userData')
         if (userData) {
-            screen.set('dashboard')
+            screen.set({current: 'dashboard', previous: ''})
             return
         }
-        screen.set('sign-in')
+        screen.set({current: 'sign-in', previous: ''})
     }
     checkIfUser()
-
-    /* function handleSignIn(e: any) {
-        let {success, error, data} = e.detail
-        if (success === true) {
-            notification.set({
-                show: true,
-                type: 'success',
-                message: 'Signed In Successfully'
-            })
-            screen.set('dashboard')
-        }
-        if (error) {
-            notification.set({
-                show: true,
-                type: 'error',
-                message: `${error}`
-            })
-        }
-    } */
 </script>
 
 <main>
@@ -45,4 +27,5 @@
     <Dashboard/>
     <Notification/>
     <FirstRecordScreen/>
+    <SecondRecordScreen/>
 </main>

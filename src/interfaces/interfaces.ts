@@ -1,3 +1,5 @@
+import { type } from "os"
+
 export interface ElementValues {
     element: Element
     ID: string
@@ -32,5 +34,19 @@ export interface userData {
 }
 
 export type cmc = "retreive" | "resume" | "pause" | "start" | "stop" | "review"
+
+interface CmcResultSuccess {
+    received: any;
+    error?: undefined;
+}
+
+interface CmcResultError{
+    error: unknown;
+    received?: undefined;
+}
+
+export type CmcResult = CmcResultSuccess | CmcResultError
+
+export type callback = (this: HTMLElement, ev: MouseEvent) => any 
 
 

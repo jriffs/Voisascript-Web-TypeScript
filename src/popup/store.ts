@@ -27,3 +27,12 @@ export const history = writable({
     projects: ['dashboard', 'Manage projects'],
     files: ['']
 })
+
+export const showBackDrop = writable(false)
+
+let show: boolean, message: string, value: unknown
+export const modal = writable({
+    show: false,
+    message: '',
+    value: ''
+})

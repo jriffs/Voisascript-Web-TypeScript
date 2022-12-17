@@ -6,7 +6,8 @@
 
 <style>
     button {
-        padding: 10px;
+        padding-block: 12.5px;
+        padding-inline: 20px;
         text-align: center;
         font-size: 16px;
         border-radius: 5px;

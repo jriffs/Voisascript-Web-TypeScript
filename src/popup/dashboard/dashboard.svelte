@@ -8,7 +8,8 @@
     let username: string
    async function getUsername() {
         const {userData} = await Browser.storage.local.get('userData')
-        username = userData.username      
+        if (!userData) return
+        username = userData?.username      
    }
    getUsername()
 </script>

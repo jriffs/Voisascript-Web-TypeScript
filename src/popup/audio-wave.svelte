@@ -46,8 +46,7 @@
             <div class="bar" class:up-down="{animateAudioWave.play}" class:pause="{animateAudioWave.pause}"></div>
             <div class="bar" class:up-down="{animateAudioWave.play}" class:pause="{animateAudioWave.pause}"></div>
             <div class="bar" class:up-down="{animateAudioWave.play}" class:pause="{animateAudioWave.pause}"></div>
-        {/if}
-        {#if animateAudioWave.stop}
+        {:else if animateAudioWave.stop || animateAudioWave.pause}
             <div class="bar"></div>
             <div class="bar"></div>
             <div class="bar"></div>

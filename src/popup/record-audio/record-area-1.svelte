@@ -14,7 +14,8 @@
     $: selectInputValue = optionsValue?.split('~')[0]
     async function getProjects() {
         const {userData} = await Browser.storage.local.get('userData')
-        projects = userData.projects
+        if (!userData) return
+        projects = userData?.projects
     }
 
     const handleOptionsClick = (e: any) => {

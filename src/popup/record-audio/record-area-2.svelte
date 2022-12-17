@@ -9,6 +9,8 @@
     import { communicateWithContent } from "../communicate";
     import ButtonSecondary from "../buttons/button-secondary.svelte";
     import ButtonPrimary from "../buttons/button-primary.svelte";
+    import Timer from "./recorder-time.svelte";
+    import { convertURIToBinary } from "../../misc/file-extract";
 
     let animateAudioWave = {
         play: false,
@@ -16,7 +18,8 @@
         stop: true
     }
 
-    let btnText1 = 'Cancel', btnText2 = 'Upload'
+    let btnText1 = 'Cancel', btnText2 = 'Upload',
+    timerAction: string
 
     async function handlePlayButton() {
         const project = $recordParams.project,
@@ -26,20 +29,27 @@
             let state: CmcResult
             switch (received.recorderState) {
                 case 'paused':
+                    timerAction = 'start'
+                    animateAudioWave = {
+                        play: true,
+                        pause: false,
+                        stop: false
+                    }
                     await communicateWithContent('resume')
                     recordParams.set({
                         Recorderstate: 'recording',
                         project,
                         fileName,
                         file: null
-                    })
-                    animateAudioWave = {
-                        play: true,
-                        pause: false,
-                        stop: false
-                    }                  
-                break;
+                    })              
+                    break;
                 case 'recording':
+                    timerAction = 'pause'
+                    animateAudioWave = {
+                        play: false,
+                        pause: true,
+                        stop: false
+                    }
                     await communicateWithContent('pause')
                     recordParams.set({
                         Recorderstate: 'paused',
@@ -47,13 +57,14 @@
                         fileName,
                         file: null
                     })
-                    animateAudioWave = {
-                        play: false,
-                        pause: true,
-                        stop: false
-                    }
                     break;
                 case 'inactive':
+                    timerAction = 'start'
+                    animateAudioWave = {
+                        play: true,
+                        pause: false,
+                        stop: false
+                    }
                     await communicateWithContent('start')
                     recordParams.set({
                         Recorderstate: 'recording',
@@ -61,35 +72,52 @@
                         fileName,
                         file: null
                     })
-                    animateAudioWave = {
-                        play: true,
-                        pause: false,
-                        stop: false
-                    }
                     break;
             }
         }       
     }
     async function handleStopButton() {
+        timerAction = 'reset'
+        animateAudioWave = {
+            play: false,
+            pause: false,
+            stop: true
+        }
+        let project = $recordParams.project, fileName = $recordParams.fileName
         let state: CmcResult
         try {
             state = await communicateWithContent('retreive')
             const {recorderState} = state.received
             if (recorderState !== 'inactive') {
                 await communicateWithContent('stop')
-                animateAudioWave = {
-                    play: false,
-                    pause: false,
-                    stop: true
-                }
                 state = await communicateWithContent('retreive')
-                if (state.received.recorderState === 'inactive') {
-                    const res = await communicateWithContent('review')
-                    console.log(res)                    
+                if (state?.received?.recorderState === 'inactive') {
+                    const {received} = await communicateWithContent('review')
+                    const {audioBlobText} = received
+                    if (audioBlobText) {
+                        let binary = convertURIToBinary(audioBlobText)
+                        let audioBlob = new Blob([binary], {type: 'audio/webm'})
+                        recordParams.set({
+                            Recorderstate: 'inactive',
+                            project,
+                            fileName,
+                            file: audioBlob
+                        })
+                        return
+                    }
+                    notify({
+                        type: 'error',
+                        message: `Internal Error: System couldn't Prepare Audio`,
+                        delay: 3
+                    })                  
                 }                             
             }
         } catch (error) {
-            console.log(error)              
+            notify({
+                type: 'error',
+                message: `Error: ${error}`,
+                delay: 3
+            })              
         }
     }
     async function handleCancel() {
@@ -110,7 +138,7 @@
                 <img src="../icons/mic.svg" alt="">
             </div>
             <div class="time">
-                <span>00:05.39</span>
+                <Timer {timerAction}/>
             </div>
             <div class="audio-wave">
                 <AudioWave {animateAudioWave}/>
@@ -167,7 +195,7 @@
         justify-content: space-evenly;
         align-items: center;
         min-width: 100%;
-        min-height: 400;
+        min-height: 455;
     }
     .recording-area .mic{
         display: flex;
@@ -189,14 +217,6 @@
         justify-content: center;
         align-items: center;
     }
-    .recording-area .time span{
-        font-family: Inter;
-        font-size: 16px;
-        font-weight: 400;
-        line-height: 24px;
-        letter-spacing: 0em;
-        text-align: left;
-    }
     .recording-area .audio-wave{
         display: flex;
         min-width: 100%;
@@ -209,7 +229,7 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        min-width: 30%;
+        min-width: 35%;
         min-height: fit-content;
     }
     .audio-controls button{
@@ -223,45 +243,4 @@
         width: 30px;
         height: 30px;
     }
-    /* .main-record-audio-content .audio-wave{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 50%;
-        margin-block: 10;
-    }
-    .main-record-audio-content .audio-wave img{
-        min-height: 100%;
-        min-width: 60%;
-    }
-    .main-record-audio-content .audio-controls{
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        min-width: 35%;
-        padding-block: 10;
-    }
-    .main-record-audio-content .audio-controls button{
-        height: fit-content;
-        width: fit-content;
-        background: transparent;
-        border: none;
-    }
-    .main-record-audio-content .audio-controls button img{
-        max-height: 45;
-        min-width: 45;
-    }
-    .main-record-audio-content .main-controls{
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        min-width: 64%;
-        padding-block: 10;
-    }
-    .main-record-audio-content .main-controls button{
-        padding-block: 8;
-        padding-inline: 25;
-    } */
 </style>

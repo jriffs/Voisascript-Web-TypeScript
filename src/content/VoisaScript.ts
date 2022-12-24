@@ -18,22 +18,26 @@ let testSending: any
 createRecordArea()
 InitializeAudio()
 
-function checkNchange(this: HTMLElement, ev: MouseEvent) {
-    console.log('hovered over body')
-    if (getElementsWithKeywords(elements).length > 0) {
-        let content = getElementsWithKeywords(elements)
+async function checkNchange(this: HTMLElement, ev: MouseEvent) {
+    const {ContentScriptTransform} = await Browser.storage.local.get('ContentScriptTransform')
+    if (ContentScriptTransform.value == false) {
+        this.removeEventListener('click', checkNchange)
+        return
+    }
+    let content = getElementsWithKeywords(elements)
+    if (content.length > 0) {
         changeElement(content).then((result) => {
             if (result.update == 'change successful') {
                 audioControl()            
-                this.removeEventListener('mouseover', checkNchange)               
+                this.removeEventListener('click', checkNchange)               
             } 
         })
         return
     }
-    this.removeEventListener('mouseover', checkNchange)            
+    this.removeEventListener('click', checkNchange)            
 }
 
-body.addEventListener('mouseover', checkNchange)
+body.addEventListener('click', checkNchange)
 
 async function InitializeAudio(): Promise<void> {
     console.log('initializing audio ...')

@@ -279,7 +279,7 @@
         border-radius: 0px;
         background: #2288f4;
         position: relative;
-        left: -22%;
+        left: -25%;
     }
 
     @keyframes upDown {

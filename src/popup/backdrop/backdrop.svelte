@@ -7,9 +7,7 @@
 </script>
 
 {#if $showBackDrop}
-    <div transition:slide class="back-drop" on:click={handleClick} on:keypress={() => {}}>
-        <slot></slot>
-    </div> 
+    <div transition:slide class="back-drop" on:click={handleClick} on:keypress={() => {}}></div> 
 {/if}
 
 <style>

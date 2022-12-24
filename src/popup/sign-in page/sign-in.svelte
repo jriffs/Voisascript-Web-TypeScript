@@ -44,6 +44,7 @@
                             screen.set({current: 'dashboard', previous: ''}) 
                         }, 2000);
                     })
+                    await Browser.storage.local.set({ContentScriptTransform: {value: false}})
                     return
                 }
                 notify({

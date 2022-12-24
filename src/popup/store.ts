@@ -24,7 +24,9 @@ export const recordParams = writable(
 
 export const history = writable({
     record: ['dashboard', 'Record audio', 'Record audio 2', 'Record audio 3'],
-    projects: ['dashboard', 'Manage projects'],
+    CreateProject: ['dashboard', 'Manage projects', 'Create project'],
+    EditProject: ['dashboard', 'Manage projects', 'Edit project'],
+    Settings: ['dashboard', 'Settings'],
     files: ['']
 })
 
@@ -36,3 +38,4 @@ export const modal = writable({
     message: '',
     value: ''
 })
+export const fileURL = writable('')

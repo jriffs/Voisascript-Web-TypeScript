@@ -35,7 +35,7 @@
                     recordParams.set({
                         Recorderstate: received.recorderState,
                         project: optionsValue,
-                        fileName,
+                        fileName: `${fileName}.mp3`,
                         file: null
                     })
                     notify({

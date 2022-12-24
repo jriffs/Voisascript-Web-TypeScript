@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { screen, recordParams } from "../store";
+    import { screen, recordParams, showBackDrop, modal, fileURL } from "../store";
     import { fade, fly, scale, slide, draw, crossfade, blur } from "svelte/transition";
     import Header from "../header.svelte";
     import { CmcResult, userProjects } from "../../interfaces/interfaces";
@@ -85,46 +85,108 @@
         }
         let project = $recordParams.project, fileName = $recordParams.fileName
         let state: CmcResult
-        try {
-            state = await communicateWithContent('retreive')
-            const {recorderState} = state.received
-            if (recorderState !== 'inactive') {
-                await communicateWithContent('stop')
+        if ($recordParams.Recorderstate !== 'inactive') {
+           try {
                 state = await communicateWithContent('retreive')
-                if (state?.received?.recorderState === 'inactive') {
-                    const {received} = await communicateWithContent('review')
-                    const {audioBlobText} = received
-                    if (audioBlobText) {
-                        let binary = convertURIToBinary(audioBlobText)
-                        let audioBlob = new Blob([binary], {type: 'audio/webm'})
-                        recordParams.set({
-                            Recorderstate: 'inactive',
-                            project,
-                            fileName,
-                            file: audioBlob
-                        })
-                        return
-                    }
-                    notify({
-                        type: 'error',
-                        message: `Internal Error: System couldn't Prepare Audio`,
-                        delay: 3
-                    })                  
-                }                             
-            }
-        } catch (error) {
-            notify({
-                type: 'error',
-                message: `Error: ${error}`,
-                delay: 3
-            })              
-        }
+                const {recorderState} = state.received
+                if (recorderState !== 'inactive') {
+                    await communicateWithContent('stop')
+                    state = await communicateWithContent('retreive')
+                    if (state?.received?.recorderState === 'inactive') {
+                        const {received} = await communicateWithContent('review')
+                        const {audioBlobText} = received
+                        if (audioBlobText) {
+                            let binary = convertURIToBinary(audioBlobText)
+                            let audioBlob = new Blob([binary], {type: 'audio/webm'})
+                            recordParams.set({
+                                Recorderstate: 'inactive',
+                                project,
+                                fileName,
+                                file: audioBlob
+                            })
+                            return
+                        }
+                        notify({
+                            type: 'error',
+                            message: `Internal Error: System couldn't Prepare Audio`,
+                            delay: 3
+                        })                  
+                    }                             
+                }
+            } catch (error) {
+                notify({
+                    type: 'error',
+                    message: `Error: ${error}`,
+                    delay: 3
+                })              
+            } 
+        }   
     }
     async function handleCancel() {
-        
+        console.log($recordParams.Recorderstate)        
+        if ($recordParams.Recorderstate === 'inactive') {
+            recordParams.set({
+                Recorderstate: 'inactive',
+                project: '',
+                fileName: '',
+                file: null
+            })
+            screen.set({current: 'dashboard', previous: ''})
+        } else {
+            showBackDrop.set(true)
+            modal.set({
+                show: true,
+                message: 'Cancel this recording ??',
+                value: ''
+            })
+        }
     }
     async function handleUpload() {
-        
+        if ($recordParams.Recorderstate == 'inactive' && $recordParams.file) {
+            let data = new FormData()
+            data.append('audio', $recordParams.file, $recordParams.fileName)
+            data.append('project', $recordParams.project)
+            const { userData } = await Browser.storage.local.get('userData')
+            const { userToken } = userData
+            if (userToken) {
+                const headers = {
+                    authorization: `Bearer ${userToken}`,
+                    originator: `Extension`
+                }
+                const response = await fetch('http://localhost:5000/files/upload', {
+                    method: 'POST',
+                    headers: headers,
+                    body: data
+                })
+                const ResponseData = await response.json()
+                console.log(ResponseData)                
+                if (response.ok === true) {
+                    notify({
+                        delay: 3,
+                        message: 'File uploaded successfully 🤙🤙',
+                        type: 'success' 
+                    })
+                    fileURL.set(ResponseData?.url)
+                    screen.set({current: 'Record audio 3', previous: ''}) 
+                }
+            }                       
+        }        
+    }
+    async function cancelRecording() {
+        await communicateWithContent('stop')
+        showBackDrop.set(false)
+        recordParams.set({
+            Recorderstate: 'inactive',
+            project: '',
+            fileName: '',
+            file: null
+        })
+        screen.set({current: 'Record audio', previous: ''})
+        modal.set({show: false, message: '', value: ''})
+    }
+    $: if ($modal.value == 'yes') {
+        console.log('User Clicked yes')        
+        cancelRecording()
     }
 </script>
 

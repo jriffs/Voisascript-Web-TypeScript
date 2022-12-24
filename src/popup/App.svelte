@@ -8,7 +8,14 @@
     import Dashboard from "./dashboard/dashboard.svelte";
     import FirstRecordScreen from "./record-audio/record-area-1.svelte";
     import SecondRecordScreen from "./record-audio/record-area-2.svelte";
+    import ThirdRecordScreen from "./record-audio/record-area-3.svelte";
     import Backdrop from "./backdrop/backdrop.svelte";
+    import Modal from "./backdrop/modal.svelte";
+    import ManageProjects from "./projects/manage-projects.svelte";
+    import CreateProject from "./projects/create-project.svelte";
+    import EditProject from "./projects/edit-project.svelte";
+    import Settings from "./settings/settings.svelte";
+    // import Loading from "./backdrop/loading.svelte";
 
     // let data: unknown
 
@@ -21,7 +28,7 @@
         screen.set({current: 'sign-in', previous: ''})
     }
     checkIfUser()
-    showBackDrop.set(true)
+    // screen.set({current: 'Manage projects', previous: ''})
 </script>
 
 <main>
@@ -30,6 +37,12 @@
     <Notification/>
     <FirstRecordScreen/>
     <SecondRecordScreen/>
+    <ThirdRecordScreen/>
+    <ManageProjects/>
+    <CreateProject/>
+    <EditProject/>
+    <Settings/>
 
     <Backdrop/>
+    <Modal/>
 </main>

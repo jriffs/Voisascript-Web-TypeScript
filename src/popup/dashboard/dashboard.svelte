@@ -32,7 +32,7 @@
     .dashboard-content{
         margin-block: 20px;
         min-width: 100%;
-        min-height: 100%;
+        min-height: 75%;
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;

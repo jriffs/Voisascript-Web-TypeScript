@@ -1,11 +1,16 @@
 <script lang="ts">
     import Browser from "webextension-polyfill";
+    import { screen } from "./store";
     let username: any
     async function set() {
         const { userData } = await Browser.storage.local.get('userData')
         username = userData.username
     }
     set()
+    
+    function settingsClick(){
+        screen.set({current: 'Settings', previous: ''})
+    }
 </script>
 
 <div class="header">
@@ -14,7 +19,7 @@
         <h5>Voisascript</h5>
     </div>
     <div class="settings-area">
-        <button>
+        <button on:click={settingsClick}>
            <img src="../icons/settings.svg" alt="settings" /> 
         </button>
     </div>

@@ -68,6 +68,7 @@
         })
     }
     let showProjects: boolean = false
+    let BtnLoading: boolean = false
 </script>
 
 {#if $screen.current === 'Record audio'}
@@ -94,7 +95,7 @@
             {#if showInput}
                <input transition:slide id="filename" type="text" disabled="{!showInput}" bind:value={fileName} placeholder="What should the Audio be called"> 
             {/if}
-            <ButtonPrimary BtnText={'Start Recording'} exec={handlebuttonClick}/>
+            <ButtonPrimary BtnText={'Start Recording'} exec={handlebuttonClick} {BtnLoading}/>
         </div>
     </div>
 {/if}

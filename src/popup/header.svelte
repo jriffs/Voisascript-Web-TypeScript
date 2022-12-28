@@ -53,13 +53,12 @@
         font-style: normal;
         font-weight: 500;
         font-size: 24px;
-        margin-inline-start: 10px;
+        margin-inline-start: -25px;
         color: #021931;  
     }
     .logo img {
-        width: 40px;
-        height: 40px;
-        margin-inline-start: 35px;
+        width: 110px;
+        height: 110px;
     }
     .settings-area {
         display: flex;

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { screen, recordParams, showBackDrop, modal, fileURL } from "../store";
     import { fade, fly, scale, slide, draw, crossfade, blur } from "svelte/transition";
+    import { onMount } from "svelte";
     import Header from "../header.svelte";
     import { CmcResult, userProjects } from "../../interfaces/interfaces";
     import AudioWave from "../audio-wave.svelte";
@@ -11,17 +12,21 @@
     import ButtonPrimary from "../buttons/button-primary.svelte";
     import Timer from "./recorder-time.svelte";
     import { convertURIToBinary } from "../../misc/file-extract";
+    // import Ace from "../../misc/ace-min/ace";
 
+    
     let animateAudioWave = {
         play: false,
         pause: false,
         stop: true
-    }
+    },
+    BtnControlsLoading: boolean, BtnLoading: boolean
 
     let btnText1 = 'Cancel', btnText2 = 'Upload',
     timerAction: string
 
     async function handlePlayButton() {
+        BtnControlsLoading = true
         const project = $recordParams.project,
         fileName = $recordParams.fileName       
         const {received, error} = await communicateWithContent('retreive')
@@ -29,13 +34,14 @@
             let state: CmcResult
             switch (received.recorderState) {
                 case 'paused':
+                    await communicateWithContent('resume')
+                    BtnControlsLoading = false
                     timerAction = 'start'
                     animateAudioWave = {
                         play: true,
                         pause: false,
                         stop: false
                     }
-                    await communicateWithContent('resume')
                     recordParams.set({
                         Recorderstate: 'recording',
                         project,
@@ -44,13 +50,14 @@
                     })              
                     break;
                 case 'recording':
+                    await communicateWithContent('pause')
+                    BtnControlsLoading = false
                     timerAction = 'pause'
                     animateAudioWave = {
                         play: false,
                         pause: true,
                         stop: false
                     }
-                    await communicateWithContent('pause')
                     recordParams.set({
                         Recorderstate: 'paused',
                         project,
@@ -59,13 +66,14 @@
                     })
                     break;
                 case 'inactive':
+                    await communicateWithContent('start')
+                    BtnControlsLoading = false
                     timerAction = 'start'
                     animateAudioWave = {
                         play: true,
                         pause: false,
                         stop: false
                     }
-                    await communicateWithContent('start')
                     recordParams.set({
                         Recorderstate: 'recording',
                         project,
@@ -83,6 +91,7 @@
             pause: false,
             stop: true
         }
+        BtnControlsLoading = true
         let project = $recordParams.project, fileName = $recordParams.fileName
         let state: CmcResult
         if ($recordParams.Recorderstate !== 'inactive') {
@@ -91,6 +100,7 @@
                 const {recorderState} = state.received
                 if (recorderState !== 'inactive') {
                     await communicateWithContent('stop')
+                    BtnControlsLoading = false
                     state = await communicateWithContent('retreive')
                     if (state?.received?.recorderState === 'inactive') {
                         const {received} = await communicateWithContent('review')
@@ -142,6 +152,7 @@
         }
     }
     async function handleUpload() {
+        BtnLoading = true
         if ($recordParams.Recorderstate == 'inactive' && $recordParams.file) {
             let data = new FormData()
             data.append('audio', $recordParams.file, $recordParams.fileName)
@@ -161,16 +172,39 @@
                 const ResponseData = await response.json()
                 console.log(ResponseData)                
                 if (response.ok === true) {
+                    BtnLoading = false
                     notify({
                         delay: 3,
                         message: 'File uploaded successfully 🤙🤙',
                         type: 'success' 
                     })
                     fileURL.set(ResponseData?.url)
-                    screen.set({current: 'Record audio 3', previous: ''}) 
+                    screen.set({current: 'Record audio 3', previous: ''})
+                    return 
                 }
-            }                       
-        }        
+                BtnLoading = false
+                notify({
+                    message: `Server Error -> ${response.statusText}`,
+                    type: 'error',
+                    delay: 3
+                })
+                return
+            }
+            BtnLoading = false
+            notify({
+                message: 'Internal System Error - User is Not Recognized',
+                type: 'error',
+                delay: 3
+            })
+            return                       
+        }
+        BtnLoading = false
+        notify({
+            message: 'No file to be uploaded .. please record one',
+            type: 'error',
+            delay: 4
+        })
+        return        
     }
     async function cancelRecording() {
         await communicateWithContent('stop')
@@ -188,7 +222,27 @@
         console.log('User Clicked yes')        
         cancelRecording()
     }
+
+    let EditorScriptLoaded: boolean, editorModeValue: string
+
+    $: if (EditorScriptLoaded && editorModeValue) {
+            let CD = document.querySelector("#editor")
+            window.ace.config.set('basePath', '/')
+            let editor = window.ace.edit(CD);
+            editor.setTheme("ace/theme/cobalt");
+            editor.session.setMode(`ace/mode/${editorModeValue}`);
+            console.log(editor)
+    }
+    
+    function InitEditor() {
+        EditorScriptLoaded = true
+        console.log('Editor Script Initialized')        
+    }
 </script>
+
+<svelte:head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.14.0/ace.js" integrity="sha512-WYlXqL7GPpZL2ImDErTX0RMKy5hR17vGW5yY04p9Z+YhYFJcUUFRT31N29euNB4sLNNf/s0XQXZfzg3uKSoOdA==" crossorigin="anonymous" referrerpolicy="no-referrer" on:load={InitEditor}></script>
+</svelte:head>
 
 {#if $screen.current === 'Record-Audio-2'}
     <div transition:fade class="main-record-audio-content">
@@ -206,21 +260,65 @@
                 <AudioWave {animateAudioWave}/>
             </div>
             <div class="audio-controls">
-                <button on:click={handlePlayButton}>
-                    {#if $recordParams.Recorderstate == 'paused' || $recordParams.Recorderstate == 'inactive'}
-                        <img src="../icons/mic.svg" alt="">
-                    {:else if $recordParams.Recorderstate == 'recording'}
-                        <img src="../icons/pause.svg" alt="">
+                {#if BtnControlsLoading}
+                    <button on:click={handlePlayButton} class:btnControlsLoading="{BtnControlsLoading}">
+                        <img src="../icons/icons8-dots-loading.gif" alt="">
+                    </button>
+                {:else}
+                   <button on:click={handlePlayButton}>
+                        {#if $recordParams.Recorderstate == 'paused' || $recordParams.Recorderstate == 'inactive'}
+                            <img src="../icons/mic.svg" alt="">
+                        {:else if $recordParams.Recorderstate == 'recording'}
+                            <img src="../icons/pause.svg" alt="">
+                        {/if}
+                    </button> 
+                {/if}
+                <button on:click={handleStopButton} class:btnControlsLoading="{BtnControlsLoading}">
+                    {#if BtnControlsLoading}
+                        <img src="../icons/icons8-dots-loading.gif" alt="">
+                    {:else}
+                        <img src="../icons/stop-circle.svg" alt="">
                     {/if}
-                </button>
-                <button on:click={handleStopButton}>
-                    <img src="../icons/stop-circle.svg" alt="">
                 </button>
             </div>
             <div class="screen-controls">
                 <ButtonSecondary BtnText={btnText1} func={handleCancel}/>
-                <ButtonPrimary BtnText={btnText2} exec={handleUpload}/>
+                <ButtonPrimary BtnText={btnText2} exec={handleUpload} {BtnLoading}/>
             </div>
+        </div>
+        <div class="code-review">
+            <h4>Paste copied code</h4>
+            <select name="editor-mode" id="editor-mode" bind:value={editorModeValue}>
+                <option value="">Select Language</option>
+                <option value="plain_text">Plain Text</option>
+                <option value="actionscript">ActionScript</option>
+                <option value="applescript">AppleScript</option>
+                <option value="c">C</option>
+                <option value="c_cpp">C++</option>
+                <option value="coffee">Coffee Script</option>
+                <option value="css">CSS</option>
+                <option value="csharp">C#</option>
+                <option value="dart">Dart</option>
+                <option value="django">Django</option>
+                <option value="erlang">Erlang</option>
+                <option value="golang">Go-Lang</option>
+                <option value="graphqlschema">GraphQl</option>
+                <option value="haskell">Haskell</option>
+                <option value="html">HTML</option>
+                <option value="java">JAVA</option>
+                <option value="javascript">Javascript</option>
+                <option value="kotlin">Kotlin</option>
+                <option value="less">Less</option>
+                <option value="perl">Perl</option>
+                <option value="php">PHP</option>
+                <option value="php_laravel_blade">PHP (Laravel-Blade)</option>
+                <option value="python">Python</option>
+                <option value="ruby">Ruby</option>
+                <option value="rust">Rust</option>
+                <option value="sass">Sass</option>
+                <option value="typescript">TypeScript</option>
+            </select>
+            <div class="editor" id="editor"></div>
         </div>
     </div>
 {/if}
@@ -304,5 +402,55 @@
     .audio-controls button img{
         width: 30px;
         height: 30px;
+    }
+    .btnControlsLoading{
+        background: #ffffff !important;
+        padding: 10px;
+        border: 1px solid #2288f4;
+    }
+    .btnControlsLoading img{
+        width: 30px;
+        height: 30px;
+    }
+    .code-review{
+        min-width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        justify-content: center;
+    }
+    .code-review h4{
+        font-family: 'Space Grotesk';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 28px;
+        line-height: 36px;
+        letter-spacing: -0.02em;
+        color: #021931;
+        text-align: center; 
+    }
+    .code-review select{
+        padding: 10px;
+        font-family: 'Inter';
+        font-size: 15px;
+        font-weight: 400;
+        letter-spacing: 0em;
+        text-align: left;
+        width: 220px;
+        margin-inline-start: 190px;
+        margin-block-end: 15px;
+    }
+    .code-review .editor{
+        height: 400px;
+        width: 450px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin-inline-start: 80px;
+        margin-block-end: 36px;
+        font-style: normal;
+        font-weight: 400;
+        font-size: 15px;
     }
 </style>

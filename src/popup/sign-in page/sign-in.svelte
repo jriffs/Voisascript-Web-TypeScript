@@ -5,14 +5,17 @@
     import { fade } from "svelte/transition";
     import { notify } from "../notification";
     import { screen } from "../store";
+    import ButtonPrimary from "../buttons/button-primary.svelte";
     // const dispatch = createEventDispatcher();
     async function handleSignIn() {
+        BtnLoading = true
         try {
             const [tab] = await Browser.tabs.query({
                 currentWindow: true,
                 active: true
             })
             if (!tab.url) {
+                BtnLoading = false
                 notify({
                     type: 'error',
                     message: `System Error: Please Restart Browser`,
@@ -34,7 +37,9 @@
                 const userData = await response.json()
                 if (response.ok === true) {
                     console.log(userData)
-                    updateUserData(bearer, userData.userData, userData.username).then(() => {
+                    updateUserData(bearer, userData.userData, userData.username).then(async() => {
+                        BtnLoading = false
+                        await Browser.storage.local.set({ContentScriptTransform: {value: true}})
                         notify({
                             type: 'success',
                             message: `Signed In Successfully`,
@@ -44,9 +49,9 @@
                             screen.set({current: 'dashboard', previous: ''}) 
                         }, 2000);
                     })
-                    await Browser.storage.local.set({ContentScriptTransform: {value: false}})
                     return
                 }
+                BtnLoading = false
                 notify({
                     type: 'error',
                     message: `Network Failure, please check your network connection`,
@@ -54,12 +59,14 @@
                 })
                 return
             }
+            BtnLoading = false
             notify({
                 type: 'error',
                 message: `Please go to VoisaScript.com for instructions on how to sign-in`,
                 delay: 4
             })
         } catch (e) {
+            BtnLoading = false
             notify({
                 type: 'error',
                 message: `${e}`,
@@ -82,6 +89,7 @@
         }
         await Browser.storage.local.set({ userData: data })
     }
+    let BtnLoading: boolean
 </script>
 
 {#if $screen.current === 'sign-in'}
@@ -96,7 +104,15 @@
                 Voisascript removes the stress of constructing lines of comments by giving you the freedom to express yourself in your own voice.
             </p>
             <div class="button-holder">
-                <button on:click={handleSignIn}>Sign-In</button>
+                <!-- <ButtonPrimary BtnText={'Sign In ... '} {BtnLoading} exec={handleSignIn}/> -->
+                {#if BtnLoading}
+                    <button class:btnLoading="{BtnLoading}">
+                        <img src="../icons/icons8-dots-loading.gif" alt="">
+                    </button>
+                {:else}
+                   <button on:click={handleSignIn}>Sign-In</button>
+                {/if}
+                
             </div>
         </div>
     </div>
@@ -130,9 +146,8 @@
         color: #021931;  
     }
     .logo img {
-        width: 40px;
-        height: 40px;
-        margin-inline-start: 55px;
+        width: 110px;
+        height: 110px;
     }
     .content {
         margin-block: 60px;
@@ -188,5 +203,11 @@
         font-size: 18px;
         line-height: 23px;
         letter-spacing: 0.005em;
+    }
+    .btnLoading{
+        background: #ffffff !important;
+        /* padding-block: 8.5px;
+        padding-inline: 80px; */
+        border: 1px solid #2288f4 !important;
     }
 </style>

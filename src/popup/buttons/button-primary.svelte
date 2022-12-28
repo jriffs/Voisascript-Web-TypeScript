@@ -1,8 +1,17 @@
 <script lang="ts">
- export let BtnText: string, exec: (event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement; }) => any
+    export let BtnText: string, exec: (event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement; }) => any
+
+    export let BtnLoading: boolean = false
 </script>
 
-<button on:click={exec}>{BtnText}</button>
+{#if BtnLoading}
+    <button on:click={exec} class:btnLoading="{BtnLoading}">
+        <img src="../icons/icons8-dots-loading.gif" alt="">
+    </button>
+{:else}
+    <button on:click={exec}>{BtnText}</button>
+{/if}
+
 
 <style>
     button {
@@ -23,7 +32,17 @@
         background: #2288f4;
         margin-inline: 16px;
     }
+    button img{
+        width: 30px;
+        height: 30px;
+    }
     button:hover {
         background: #1e7ddf;
+    }
+    .btnLoading{
+        background: #ffffff !important;
+        padding-block: 8.5px;
+        padding-inline: 80px;
+        border: 1px solid #2288f4;
     }
 </style>

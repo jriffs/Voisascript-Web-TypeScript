@@ -1,14 +1,66 @@
 <script lang="ts">
+    import { updateUserData } from "../../misc/update-user-data";
+    import Browser from "webextension-polyfill";
     import { userProjects } from "../../interfaces/interfaces";
-    import { screen } from "../store";
+    import { Modal } from "../modal";
+    import { screen, updateParams} from "../store";
+    import { notify } from "../notification";
 
     export let project: userProjects;
-    function trash() {
-        
+    
+    async function trash() {        
+        Modal({
+            message: 'Are you sure you want to delete?',
+            onNo: async () => {},
+            onYes: deleteProject
+        })        
     }
-    function edit() {
+
+    async function deleteProject() {
+        const {userData} = await Browser.storage.local.get('userData')
+        const data = new FormData()
+        data.append('Project_ID', project.projectID)
+        const headers = {
+            "authorization": `Bearer ${userData.userToken}`,
+            "originator": `extension`
+        }
+        const response = await fetch('http://localhost:5000/projects/delete', {
+            method: 'DELETE',
+            // mode: 'no-cors',
+            headers: headers,
+            body: data
+        })
+        const Data = await response.json()
+        if (response.ok === true) {
+            updateUserData(Data.userToken, Data, Data.username).then(async() => {
+                notify({
+                    type: 'success',
+                    message: `Project Deleted Successfully`,
+                    delay: 3
+                })
+                screen.set({current: 'Manage projects', previous: ''})
+            })
+            return
+        }
+        notify({
+            type: 'error',
+            message: `Error - ${Data.error}`,
+            delay: 3
+        })
+        return
+    }
+
+    function edit() {        
+        updateParams.set({
+            projectID: project.projectID,
+            OldprojectName: project.projectName,
+            OldprojectDesc: project.projectDesc,
+            NewprojectName: '',
+            NewprojectDesc: ''
+        })
         screen.set({current: 'Edit project', previous: ''})
     }
+    
 </script>
 
 <div class="project-list">
@@ -18,7 +70,7 @@
     </div>
     <div class="buttons">
         <button on:click={edit}><img src="../icons/edit.svg" alt="edit"></button>
-        <button><img src="../icons/delete.svg" alt="delete"></button>
+        <button on:click={trash}><img src="../icons/delete.svg" alt="delete"></button>
     </div>
 </div>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { screen, recordParams, showBackDrop, modal, fileURL } from "../store";
+    import { screen, recordParams, fileURL} from "../store";
     import { fade, fly, scale, slide, draw, crossfade, blur } from "svelte/transition";
     import { onMount } from "svelte";
     import Header from "../header.svelte";
@@ -12,6 +12,8 @@
     import ButtonPrimary from "../buttons/button-primary.svelte";
     import Timer from "./recorder-time.svelte";
     import { convertURIToBinary } from "../../misc/file-extract";
+    import { Modal } from "../modal";
+    import { updateUserData } from "../../misc/update-user-data";
     // import Ace from "../../misc/ace-min/ace";
 
     
@@ -21,6 +23,7 @@
         stop: true
     },
     BtnControlsLoading: boolean, BtnLoading: boolean
+    $: BtnDisabled = BtnLoading
 
     let btnText1 = 'Cancel', btnText2 = 'Upload',
     timerAction: string
@@ -143,11 +146,10 @@
             })
             screen.set({current: 'dashboard', previous: ''})
         } else {
-            showBackDrop.set(true)
-            modal.set({
-                show: true,
+            Modal({
                 message: 'Cancel this recording ??',
-                value: ''
+                onYes: cancelRecording,
+                onNo: async () => {}
             })
         }
     }
@@ -172,14 +174,16 @@
                 const ResponseData = await response.json()
                 console.log(ResponseData)                
                 if (response.ok === true) {
-                    BtnLoading = false
-                    notify({
-                        delay: 3,
-                        message: 'File uploaded successfully 🤙🤙',
-                        type: 'success' 
+                    updateUserData(ResponseData.userToken, ResponseData, ResponseData.username).then(async() => {
+                        BtnLoading = false
+                        notify({
+                            delay: 3,
+                            message: 'File uploaded successfully 🤙🤙',
+                            type: 'success' 
+                        })
+                        fileURL.set(ResponseData?.url)
+                        screen.set({current: 'Record audio 3', previous: ''})
                     })
-                    fileURL.set(ResponseData?.url)
-                    screen.set({current: 'Record audio 3', previous: ''})
                     return 
                 }
                 BtnLoading = false
@@ -208,7 +212,6 @@
     }
     async function cancelRecording() {
         await communicateWithContent('stop')
-        showBackDrop.set(false)
         recordParams.set({
             Recorderstate: 'inactive',
             project: '',
@@ -216,11 +219,6 @@
             file: null
         })
         screen.set({current: 'Record audio', previous: ''})
-        modal.set({show: false, message: '', value: ''})
-    }
-    $: if ($modal.value == 'yes') {
-        console.log('User Clicked yes')        
-        cancelRecording()
     }
 
     let EditorScriptLoaded: boolean, editorModeValue: string
@@ -282,7 +280,7 @@
                 </button>
             </div>
             <div class="screen-controls">
-                <ButtonSecondary BtnText={btnText1} func={handleCancel}/>
+                <ButtonSecondary BtnText={btnText1} func={handleCancel} {BtnDisabled}/>
                 <ButtonPrimary BtnText={btnText2} exec={handleUpload} {BtnLoading}/>
             </div>
         </div>

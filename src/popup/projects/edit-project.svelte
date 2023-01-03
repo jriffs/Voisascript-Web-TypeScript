@@ -1,9 +1,93 @@
-<script>
-    import { screen } from "../store";
+<script lang="ts">
+    import { screen, updateParams } from "../store";
     import { fade } from "svelte/transition";
     import BackHeader from "../back-header.svelte";
     import ButtonSecondary from "../buttons/button-secondary.svelte";
     import ButtonPrimary from "../buttons/button-primary.svelte";
+    import Browser from "webextension-polyfill";
+    import { notify } from "../notification";
+    import { updateUserData } from "../../misc/update-user-data";
+    let BtnLoading: boolean, projectDesc: string, projectName: string 
+
+    $: BtnDisabled = BtnLoading
+
+    function handleCancel() {
+        projectDesc = ''
+        projectName = ''
+        updateParams.set({
+            projectID: '',
+            OldprojectDesc: '',
+            OldprojectName: '',
+            NewprojectDesc: '',
+            NewprojectName: ''
+        })
+        screen.set({current: 'Manage projects', previous: ''})
+    }
+    async function handleUpload() {
+        BtnLoading = true
+        if (!projectName || !projectDesc) {
+            BtnLoading = false
+            notify({
+                message: `Some fields are missing`,
+                delay: 3,
+                type: 'error'
+            })
+            return
+        }
+        try {
+            const {userData} = await Browser.storage.local.get('userData')
+            const data = new FormData()
+            data.append('New_Project_Name', projectName)
+            data.append('New_Project_Desc', projectDesc)
+            data.append('Project_ID', $updateParams.projectID)
+            const headers = {
+                "authorization": `Bearer ${userData.userToken}`,
+                "originator": `extension`
+            }
+            const response = await fetch('http://localhost:5000/projects/update', {
+                method: 'PUT',
+                // mode: 'no-cors',
+                headers: headers,
+                body: data
+            })            
+            const Data = await response.json()           
+            if (response.ok === true) {
+                updateUserData(Data.userToken, Data, Data.username).then(async() => {
+                    BtnLoading = false
+                    notify({
+                        type: 'success',
+                        message: `Project Updated Successfully`,
+                        delay: 3
+                    })
+                })
+                return
+            }
+            notify({
+                type: 'error',
+                message: `Error - ${Data.error}`,
+                delay: 3
+            })
+            BtnLoading = false
+            return 
+        } catch (error) {
+            BtnLoading = false
+            notify({
+                message: `${error}`,
+                delay: 3,
+                type: 'error'
+            })
+            return
+        }        
+    }
+    
+    function setInputs() {
+        projectName = $updateParams.OldprojectName
+        projectDesc = $updateParams.OldprojectDesc
+    }
+    
+    $: if($screen.current === 'Edit project') {
+        setInputs()
+    }
 </script>
 
 {#if $screen.current === 'Edit project'}
@@ -13,12 +97,12 @@
             <h4>Edit Project</h4>
         </div>
         <div class="input-area">
-            <input type="text" placeholder="Enter project name">
-            <input type="text" placeholder="Enter project description">
+            <input type="text" placeholder="Enter project name" bind:value="{projectName}">
+            <input type="text" placeholder="Enter project description" bind:value="{projectDesc}">
         </div>
         <div class="control-area">
-            <ButtonSecondary BtnText={'Cancel'}/>
-            <ButtonPrimary BtnText={'Update'}/>
+            <ButtonSecondary BtnText={'Cancel'} func={handleCancel} {BtnDisabled}/>
+            <ButtonPrimary BtnText={'Update'} exec={handleUpload} {BtnLoading}/>
         </div>
     </div>
 {/if}

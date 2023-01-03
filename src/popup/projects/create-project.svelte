@@ -1,9 +1,75 @@
-<script>
+<script lang="ts">
     import { screen } from "../store";
     import { fade } from "svelte/transition";
     import BackHeader from "../back-header.svelte";
     import ButtonSecondary from "../buttons/button-secondary.svelte";
     import ButtonPrimary from "../buttons/button-primary.svelte";
+    import Browser from "webextension-polyfill";
+    import { updateUserData } from "../../misc/update-user-data";
+    import { notify } from "../notification";
+
+    let projectName: string, projectDesc: string, BtnLoading: boolean
+    $: BtnDisabled = BtnLoading
+    function handleCancel() {
+        projectDesc = ''
+        projectName = ''
+        screen.set({current: 'Manage projects', previous: ''})
+    }
+    async function handleUpload() {
+        BtnLoading = true
+        if(!projectName || !projectDesc){
+            BtnLoading = false
+            notify({
+                type: 'error',
+                message: `Please fill out all input fields`,
+                delay: 3
+            })
+            return
+        }
+        try {
+            const {userData} = await Browser.storage.local.get('userData')
+            const data = new FormData()
+            data.append('Project_Name', projectName)
+            data.append('Project_Desc', projectDesc)
+            // console.log(userData.userToken)            
+            const headers = {
+                "authorization": `Bearer ${userData.userToken}`,
+                "originator": `extension`
+            }
+            const response = await fetch('http://localhost:5000/projects/create', {
+                method: 'POST',
+                // mode: 'no-cors',
+                headers: headers,
+                body: data
+            })
+            const Data = await response.json()
+            if (response.ok === true) {
+                updateUserData(Data.userToken, Data, Data.username).then(async() => {
+                    BtnLoading = false
+                    notify({
+                        type: 'success',
+                        message: `Project Created Successfully`,
+                        delay: 3
+                    })
+                })
+                return
+            }
+            notify({
+                type: 'error',
+                message: `Error - ${Data.error}`,
+                delay: 3
+            })
+            BtnLoading = false 
+        } catch (error) {
+            notify({
+                type: 'error',
+                message: `Error - ${error}`,
+                delay: 3
+            })
+            BtnLoading = false
+        }
+              
+    }
 </script>
 
 {#if $screen.current === 'Create project'}
@@ -13,12 +79,12 @@
             <h4>Create Project</h4>
         </div>
         <div class="input-area">
-            <input type="text" placeholder="Enter project name">
-            <input type="text" placeholder="Enter project description">
+            <input type="text" placeholder="Enter project name" bind:value={projectName}>
+            <input type="text" placeholder="Enter project description" bind:value={projectDesc}>
         </div>
         <div class="control-area">
-            <ButtonSecondary BtnText={'Cancel'}/>
-            <ButtonPrimary BtnText={'Create'}/>
+            <ButtonSecondary BtnText={'Cancel'} func={handleCancel} {BtnDisabled}/>
+            <ButtonPrimary BtnText={'Create'} exec={handleUpload} {BtnLoading}/>
         </div>
     </div>
 {/if}

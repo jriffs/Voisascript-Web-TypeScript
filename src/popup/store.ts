@@ -30,12 +30,26 @@ export const history = writable({
     files: ['']
 })
 
-export const showBackDrop = writable(false)
+export const showModal = writable(false)
 
-let show: boolean, message: string, value: unknown
 export const modal = writable({
-    show: false,
     message: '',
-    value: ''
+    onYes: async () => {},
+    onNo: async () => {}
 })
+
 export const fileURL = writable('')
+
+export const updateParams = writable({
+    projectID: '',
+    OldprojectName: '',
+    OldprojectDesc: '',
+    NewprojectName: '',
+    NewprojectDesc: ''
+})
+
+export const deleteProjectParams = writable({
+    deleteProjectName: '',
+    deleteProjectDesc: '',
+    deleteProjectID: ''
+}) 

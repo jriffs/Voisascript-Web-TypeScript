@@ -1,30 +1,42 @@
 <script lang="ts">
     import ButtonPrimary from "../buttons/button-primary.svelte";
     import ButtonSecondary from "../buttons/button-secondary.svelte";
-    import { modal } from "../store";
+    import { modal, showModal } from "../store";
     import { slide } from "svelte/transition";
+    import Backdrop from "./backdrop.svelte";
+    let BtnDisabled: boolean, BtnLoading: boolean
+    $: showBackDrop = $showModal
     function yes() {
-        modal.set({
-            show: false,
-            message: '',
-            value: 'yes'
+        showModal.set(false)
+        let execute = $modal.onYes
+        execute().then(() => {
+            modal.set({
+                message: '',
+                onYes: async () => {},
+                onNo: async () => {}
+            })
         })
     }
     function no() {
-        modal.set({
-            show: false,
-            message: '',
-            value: 'no'
+        showModal.set(false)
+        let execute = $modal.onNo
+        execute().then(() => {
+            modal.set({
+                message: '',
+                onYes: async () => {},
+                onNo: async () => {}
+            })
         })
     }
 </script>
 
-{#if $modal.show == true}
+{#if $showModal == true}
+    <Backdrop {showBackDrop}/>
     <div transition:slide class="modal">
         <h3 class="heading">{$modal.message}</h3>
         <div class="modal-choice">
-            <ButtonSecondary BtnText={'Yes'} func={yes}/>
-            <ButtonPrimary BtnText={'No'} exec={no}/>
+            <ButtonSecondary BtnText={'Yes'} func={yes} {BtnDisabled}/>
+            <ButtonPrimary BtnText={'No'} exec={no} {BtnLoading}/>
         </div>
     </div>
 {/if}

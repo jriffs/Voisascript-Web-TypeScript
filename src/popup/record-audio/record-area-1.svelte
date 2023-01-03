@@ -23,7 +23,10 @@
         showProjects = !showProjects
     }
 
-    getProjects()
+    $: if ($screen.current === 'Record audio') {
+        getProjects()
+    }
+    
     $: showInput = (optionsValue && optionsValue !== '') ? true : false
     let fileName: string
 

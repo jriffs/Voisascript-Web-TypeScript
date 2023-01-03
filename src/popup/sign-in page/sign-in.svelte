@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { userData } from "../../interfaces/interfaces";
     import Browser from "webextension-polyfill";
     // import { createEventDispatcher } from "svelte";
     import { fade } from "svelte/transition";
     import { notify } from "../notification";
     import { screen } from "../store";
-    import ButtonPrimary from "../buttons/button-primary.svelte";
-    // const dispatch = createEventDispatcher();
+    import { updateUserData } from "../../misc/update-user-data";
+
     async function handleSignIn() {
         BtnLoading = true
         try {
@@ -38,16 +37,15 @@
                 if (response.ok === true) {
                     console.log(userData)
                     updateUserData(bearer, userData.userData, userData.username).then(async() => {
-                        BtnLoading = false
-                        await Browser.storage.local.set({ContentScriptTransform: {value: true}})
-                        notify({
-                            type: 'success',
-                            message: `Signed In Successfully`,
-                            delay: 3
+                        Browser.storage.local.set({ContentScriptTransform: {value: true}}).then(() => {
+                            notify({
+                                type: 'success',
+                                message: `Signed In Successfully`,
+                                delay: 3
+                            })
+                            BtnLoading = false
+                            screen.set({current: 'dashboard', previous: ''})
                         })
-                        setTimeout(() => {
-                            screen.set({current: 'dashboard', previous: ''}) 
-                        }, 2000);
                     })
                     return
                 }
@@ -73,21 +71,6 @@
                 delay: 3
             })    
         }
-    }
-
-    async function updateUserData(bearer: string, Data: userData, username: string) {
-        const data = {
-            userToken: bearer,
-            username,
-            isLoggedIn: true,
-            projects: Data.projects,
-            files: Data.files,
-            stats: {
-                projects: Data.stats.projects,
-                files: Data.stats.files
-            }
-        }
-        await Browser.storage.local.set({ userData: data })
     }
     let BtnLoading: boolean
 </script>
@@ -143,11 +126,13 @@
         font-weight: 500;
         font-size: 24px;
         margin-inline-start: 10px;
-        color: #021931;  
+        color: #021931;
+        margin-inline-start: -25px;  
     }
     .logo img {
         width: 110px;
         height: 110px;
+        margin-inline-start: 25px;
     }
     .content {
         margin-block: 60px;

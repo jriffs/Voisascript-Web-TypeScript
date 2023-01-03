@@ -6,12 +6,13 @@
     import Browser from "webextension-polyfill";
     
     let username: string
-   async function getUsername() {
-        const {userData} = await Browser.storage.local.get('userData')
-        if (!userData) return
-        username = userData?.username      
-   }
-   getUsername()
+    $: if ($screen.current == 'dashboard') {
+        Browser.storage.local.get('userData').then(({userData}) => {
+            console.log(userData)        
+            if (!userData) return
+            username = userData?.username
+        }) 
+    }
 </script>
 
 {#if $screen.current === 'dashboard'}

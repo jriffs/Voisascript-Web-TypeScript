@@ -1,8 +1,9 @@
 <script lang="ts">
-    export let BtnText: string, func: (event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement; }) => any
+    export let BtnText: string, func: (event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement; }) => any,
+    BtnDisabled: boolean | undefined
 </script>
 
-<button on:click={func}>{BtnText}</button>
+<button on:click={func} disabled="{BtnDisabled}">{BtnText}</button>
 
 <style>
     button {

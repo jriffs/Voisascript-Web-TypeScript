@@ -14,6 +14,11 @@
 {#if $notification.show}
     <div transition:fade class="notification {$notification.type}" >
         <h3>{$notification.message}</h3>
+        {#if $notification.type == 'info'}
+            <div class="loading">
+                <img src="../icons/dot-spinner.gif" alt="">
+            </div>
+        {/if}
         <button class="cancel-button" on:click={handleCancel}>
             <img src="../icons/cancel.svg" alt="cancel">
         </button>
@@ -44,10 +49,18 @@
         width: 10;
         height: 10;
     }
+    .loading{
+        margin-inline: 10px;
+    }
     .success {
         background: #83e283;
     }
     .error {
         background: #f8552c;
+    }
+    .info{
+        background: #ffffff;
+        border: 1px solid #566676;
+        color: #2288f4;
     }
 </style>

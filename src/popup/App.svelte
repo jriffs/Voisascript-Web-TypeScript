@@ -14,6 +14,7 @@
     import CreateProject from "./projects/create-project.svelte";
     import EditProject from "./projects/edit-project.svelte";
     import Settings from "./settings/settings.svelte";
+    import ManageFiles from "./files/manage-files.svelte";
     // import Loading from "./backdrop/loading.svelte";
 
     // let data: unknown
@@ -40,6 +41,7 @@
     <ManageProjects/>
     <CreateProject/>
     <EditProject/>
+    <ManageFiles/>
     <Settings/>
 
     <Modal/>

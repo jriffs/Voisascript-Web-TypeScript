@@ -95,6 +95,10 @@
             stop: true
         }
         BtnControlsLoading = true
+        notify({
+            type: 'info',
+            message: 'Please wait while audio being prepared 👍👍'
+        })
         let project = $recordParams.project, fileName = $recordParams.fileName
         let state: CmcResult
         if ($recordParams.Recorderstate !== 'inactive') {
@@ -116,6 +120,11 @@
                                 project,
                                 fileName,
                                 file: audioBlob
+                            })
+                            notify({
+                                type: 'success',
+                                message: `Your Audio is ready 👌👌`,
+                                delay: 3
                             })
                             return
                         }
@@ -155,6 +164,10 @@
     }
     async function handleUpload() {
         BtnLoading = true
+        notify({
+            message: 'Uploading...',
+            type: 'info'
+        })
         if ($recordParams.Recorderstate == 'inactive' && $recordParams.file) {
             let data = new FormData()
             data.append('audio', $recordParams.file, $recordParams.fileName)
@@ -234,7 +247,7 @@
     
     function InitEditor() {
         EditorScriptLoaded = true
-        console.log('Editor Script Initialized')        
+        // console.log('Editor Script Initialized')        
     }
 </script>
 
@@ -259,7 +272,7 @@
             </div>
             <div class="audio-controls">
                 {#if BtnControlsLoading}
-                    <button on:click={handlePlayButton} class:btnControlsLoading="{BtnControlsLoading}">
+                    <button class:btnControlsLoading="{BtnControlsLoading}">
                         <img src="../icons/icons8-dots-loading.gif" alt="">
                     </button>
                 {:else}

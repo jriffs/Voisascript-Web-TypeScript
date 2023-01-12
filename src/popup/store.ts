@@ -1,3 +1,4 @@
+import { userProjects } from "src/interfaces/interfaces";
 import { writable } from "svelte/store";
 
 export const notification = writable(
@@ -27,7 +28,7 @@ export const history = writable({
     CreateProject: ['dashboard', 'Manage projects', 'Create project'],
     EditProject: ['dashboard', 'Manage projects', 'Edit project'],
     Settings: ['dashboard', 'Settings'],
-    files: ['']
+    files: ['dashboard', 'Manage projects', 'Manage files']
 })
 
 export const showModal = writable(false)
@@ -52,4 +53,13 @@ export const deleteProjectParams = writable({
     deleteProjectName: '',
     deleteProjectDesc: '',
     deleteProjectID: ''
+})
+
+export const fileListToExpand = writable('')
+
+export const reviewedProjectIndex = writable({
+    index: undefined ?? 0,
+    projectName: '',
+    projectDesc: '',
+    projectID: ''
 }) 

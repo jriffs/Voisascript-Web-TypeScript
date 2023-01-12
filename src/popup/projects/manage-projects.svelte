@@ -11,8 +11,7 @@
     async function getProjects() {
         const {userData} = await Browser.storage.local.get('userData')
         if (!userData) return
-        projects = userData?.projects
-        console.log()        
+        projects = userData?.projects        
     }
     function handleCreateButton() {
         screen.set({current: 'Create project', previous: ''})

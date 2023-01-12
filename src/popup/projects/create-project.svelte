@@ -17,6 +17,10 @@
     }
     async function handleUpload() {
         BtnLoading = true
+        notify({
+            type: 'info',
+            message: 'Creating Project...'
+        })
         if(!projectName || !projectDesc){
             BtnLoading = false
             notify({

@@ -3,7 +3,7 @@
     import Browser from "webextension-polyfill";
     import { userProjects } from "../../interfaces/interfaces";
     import { Modal } from "../modal";
-    import { screen, updateParams} from "../store";
+    import { screen, updateParams, reviewedProjectIndex} from "../store";
     import { notify } from "../notification";
 
     export let project: userProjects;
@@ -17,6 +17,10 @@
     }
 
     async function deleteProject() {
+        notify({
+            type: 'info',
+            message: 'Deleting Project...'
+        })
         const {userData} = await Browser.storage.local.get('userData')
         const data = new FormData()
         data.append('Project_ID', project.projectID)
@@ -60,10 +64,24 @@
         })
         screen.set({current: 'Edit project', previous: ''})
     }
-    
+
+    async function HandleProjectClick() {
+        screen.set({current: 'Manage files', previous: ''})
+        const {userData} = await Browser.storage.local.get('userData')
+        const {projects} = userData
+        if (Array.isArray(projects)) {
+            let index =  projects.findIndex((proj) => project.projectID == proj?.projectID)
+            reviewedProjectIndex.set({
+                index,
+                projectName: project.projectName,
+                projectDesc: project.projectDesc,
+                projectID: project.projectID
+            })            
+        }        
+    }
 </script>
 
-<div class="project-list">
+<div class="project-list" on:dblclick={HandleProjectClick}>
     <div class="heading-area">
         <div class="file-icon"><img src="../icons/file-icon.svg" alt=""></div>
         <h6>{project.projectName}</h6>

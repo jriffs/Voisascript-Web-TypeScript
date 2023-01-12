@@ -25,6 +25,10 @@
     }
     async function handleUpload() {
         BtnLoading = true
+        notify({
+            type: 'info',
+            message: 'Editing Project...'
+        })
         if (!projectName || !projectDesc) {
             BtnLoading = false
             notify({

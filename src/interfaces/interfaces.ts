@@ -17,8 +17,12 @@ export interface userProjects {
 }
 
 export interface userFiles {
-    id: number,
-    fileName: string
+    File_Name: string, 
+    File_URL: string,
+    Project_ID: string,
+    id: string,
+    Date_created: string,
+    Time_stamp: string
 }
 
 export interface userData {

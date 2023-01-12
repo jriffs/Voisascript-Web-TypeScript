@@ -9,5 +9,9 @@ Events.on('fileReader-load-sucess', (target: Function) => {
     target()
 })
 
+Events.on('testing', () => {
+    console.log('event working')    
+})
+
 
 // Events.emit('upload-event', somn, 'this is it')

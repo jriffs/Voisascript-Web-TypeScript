@@ -1,4 +1,5 @@
 import Browser from "webextension-polyfill"
+import { convertMin } from "../misc/convert-min";
 
 export function audioControl() {
     let v_logos = document.querySelectorAll('.v-logo'),
@@ -22,7 +23,7 @@ export function audioControl() {
         }
     }
 
-    function convertMin(time: number) {
+    /* function convertMin(time: number) {
         time = Math.round(time)
 
         if (time >= 60) {
@@ -52,7 +53,7 @@ export function audioControl() {
             }  
         }
                 
-    }
+    } */
 
     v_logos.forEach(v_logo => {
         v_logo.addEventListener('click', () => {

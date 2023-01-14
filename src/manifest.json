@@ -1,15 +1,11 @@
 {
-
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "VoisaScript",
   "version": "1.0.0",
-
   "description": "Record and Play audio comments.",
-
   "icons": {
     "48": "icons/V2-2.png"
   },
-
   "content_scripts": [
     {
       "matches": ["*://*.github.com/*", "*://*.gitlab.com/*"],
@@ -22,14 +18,11 @@
       ]
     }
   ],
-
   "background": {
-    "scripts": [
-      "background/background.ts"
-    ]
+    "service_worker": "background/background.ts",
+    "type": "module"
   },
-
-  "browser_action": {
+  "action": {
     "browser_style": true,
     "default_icon": {
       "16": "icons/Voisascript 1-1(16).png",
@@ -38,27 +31,48 @@
     "default_title": "VoisaScript",
     "default_popup": "popup/popup.html"      
   },
-  
   "permissions": [
     "webRequest",
     "contextMenus",
     "storage",
     "tabs",
-    "webRequestBlocking",
-    "<all_urls>",
-    "browsingData" 
+    "browsingData",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "declarativeNetRequestFeedback",
+    "unlimitedStorage" 
   ],
-
-  "web_accessible_resources": [
-    "/icons/Voisascript-1-1.png",
-    "/icons/Voisascript 1-1(16).png",
-    "/icons/content/icons8-fast-forward-64.png",
-    "/icons/content/icons8-play-64.png",
-    "/icons/content/icons8-pause-64.png",
-    "/icons/content/icons8-rewind-64.png"
+  "host_permissions": [
+    "*://*.github.com/*", 
+    "*://*.gitlab.com/*"
   ],
-
-  "content_security_policy": "default-src 'self'; media-src https://firebasestorage.googleapis.com/ ; style-src 'unsafe-inline'; style-src-elem 'unsafe-inline' https://fonts.googleapis.com; connect-src ws://localhost:1234 http://localhost:3000 http://localhost:5000 https://firebasestorage.googleapis.com/; font-src https://fonts.gstatic.com; script-src-elem 'self' https://cdnjs.cloudflare.com/ "
-  
+  "optional_host_permissions": [
+    "*://*/*"
+  ],
+  "web_accessible_resources": [{
+    "resources": [
+      "/icons/Voisascript-1-1.png",
+      "/icons/Voisascript 1-1(16).png",
+      "/icons/content/icons8-fast-forward-64.png",
+      "/icons/content/icons8-play-64.png",
+      "/icons/content/icons8-pause-64.png",
+      "/icons/content/icons8-rewind-64.png"
+    ],
+    "matches": [  
+    "*://*.github.com/*", 
+    "*://*.gitlab.com/*"
+    ]
+  }],
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; media-src https://firebasestorage.googleapis.com/ ; style-src 'unsafe-inline'; style-src-elem 'unsafe-inline' https://fonts.googleapis.com; connect-src ws://localhost:1234 http://localhost:3000 http://localhost:5000 https://firebasestorage.googleapis.com/; font-src https://fonts.gstatic.com; script-src-elem 'self' https://cdnjs.cloudflare.com/ "
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "./rules/rule_1.json"
+      }
+    ]
+  }
 }
-  

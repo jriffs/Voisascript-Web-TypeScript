@@ -25,12 +25,13 @@ async function checkNchange(this: HTMLElement, ev: MouseEvent) {
         return
     }
     let content = getElementsWithKeywords(elements)
-    if (content.length > 0) {
-        changeElement(content).then((result) => {
+    if (content.length > 0) {        
+        changeElement(content).then((result) => {            
             if (result.update == 'change successful') {
                 audioControl()            
                 this.removeEventListener('click', checkNchange)               
-            } 
+            }
+            this.removeEventListener('click', checkNchange) 
         })
         return
     }
@@ -40,9 +41,7 @@ async function checkNchange(this: HTMLElement, ev: MouseEvent) {
 body.addEventListener('click', checkNchange)
 
 async function InitializeAudio(): Promise<void> {
-    console.log('initializing audio ...')
     was = new WAS()
-    console.log(`done initializing audio ...`)
     console.log(was.state())
 }
 

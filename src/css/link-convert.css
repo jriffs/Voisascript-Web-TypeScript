@@ -1,5 +1,5 @@
 *{
-    box-sizing: initial !important;
+    /* box-sizing: initial !important; */
 }
 
 .cont{
@@ -24,8 +24,8 @@ button{
     position: relative;
     display: flex;
     cursor: pointer;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     background-color: #bcf537;
     border-radius: 50px;
 }
@@ -43,7 +43,7 @@ button{
     position: relative;
     z-index: 1;
     bottom: 50px;
-    left: -66px;
+    left: -60px;
     margin-left: -80px;
     display: flex;
     flex-direction: row;

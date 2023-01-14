@@ -20,7 +20,7 @@ function checkSyntax(elementArr: Element[]): void {
             nodes.forEach(node => {
                 if (node.nodeValue !== null && node.nodeValue.includes('http://localhost:5000')) {
                     let text = `${node?.textContent?.split(' ').find((val) => val.includes('http'))}`                     
-                    valueArr.push({element: element, ID: `${element.id}`, text: `${text}`})
+                    valueArr.push({element: element, ID: `${element.id}`, text: `${text}`})                    
                 }
             })
         }                    

@@ -1,0 +1,21 @@
+[
+    {
+        "id" : 1,
+        "priority": 1,
+        "action" : { 
+            "type" : "modifyHeaders",
+            "responseHeaders": [
+                {
+                    "header": "content-security-policy",
+                    "operation": "append",
+                    "value": "media-src github.com user-images.githubusercontent.com/ secured-user-images.githubusercontent.com/ firebasestorage.googleapis.com/"
+                }
+            ] 
+        },
+        "condition" : {
+            "urlFilter" : "|https*",
+            "domains" : ["github.com"],
+            "resourceTypes" : ["media"]
+        }
+    }
+]

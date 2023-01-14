@@ -10,13 +10,13 @@ async function somn(mesage: {}) {
 }
 
 
-export async function changeElement(contentArr: ElementValues[]) {
+export async function changeElement(contentArr: ElementValues[]) {  
     try {
         const promises = contentArr.map((item) => {
-            const url_promise = somn({message: item.text})
+            const url_promise = somn({message: item.text})                       
             return url_promise
-        })
-        const urls = await Promise.all(promises)
+        })       
+        const urls = await Promise.all(promises)              
         if (urls.length > 0) {
             for (let i = 0; i < contentArr.length; i++) {
                 // console.log(contentArr[i].element)
@@ -51,6 +51,6 @@ export async function changeElement(contentArr: ElementValues[]) {
         }
         return  {update: 'change successful'}
     } catch (error) {
-        return {update: 'change successful'}
+        return {update: 'change unsuccessful'}
     } 
 }

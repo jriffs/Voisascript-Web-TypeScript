@@ -19,3 +19,19 @@ export async function getURL(url: string) {
     const fileURL: string = await response.text()
     return fileURL
 }
+
+/* export async function getAudio(audio_url: string) {        
+    let blobText: string | ArrayBuffer | null | undefined
+    const reader = new FileReader()
+    let url = await getURL(audio_url)    
+    const Response = await fetch(`${url}`)  
+    const audioBlob = await Response.blob()
+    reader.readAsDataURL(audioBlob) 
+    reader.onload = async function (event: ProgressEvent<FileReader>){                    
+        blobText = event?.target?.result
+        console.log(reader.result)         
+        // return blobText      
+    }
+    // console.log(Response)
+    return Promise.resolve()   
+} */

@@ -44,6 +44,7 @@
   ],
   "host_permissions": [
     "*://*.github.com/*", 
+    "*://github.com/*", 
     "*://*.gitlab.com/*"
   ],
   "optional_host_permissions": [

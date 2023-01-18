@@ -6,6 +6,7 @@ import { getURL } from "../background/get-url"
 
 async function somn(mesage: {}) {
     const sent = await Browser.runtime.sendMessage(mesage)
+    console.log(sent)    
     return Promise.resolve(sent.data) 
 }
 

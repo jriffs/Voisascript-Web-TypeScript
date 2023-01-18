@@ -1,8 +1,8 @@
 /// <reference types="chrome"/>
 
 import Browser from "webextension-polyfill"
-// import { changeHeaders } from "./webRequest";
-import { getURL } from "../background/get-url";
+import { changeHeaders } from "./webRequest";
+import { getURL} from "../background/get-url";
 
 console.log(`i'm here 😁`)
 
@@ -22,11 +22,16 @@ Browser.contextMenus.onClicked.addListener((details) => {
 
   
 Browser.runtime.onMessage.addListener(async (message: any, sender: Browser.Runtime.MessageSender) => {
-	const url = await getURL(message.message)
-	return Promise.resolve({data: url})
+	const data = await getURL(message.message)	
+	// const data = await getAudio(message.message)
+	console.log(data)		
+	return Promise.resolve({data: data})
 })
 
-// changeHeaders()
+if (!chrome) {
+	changeHeaders()
+}
+
 chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
 	console.log(info)	
 })

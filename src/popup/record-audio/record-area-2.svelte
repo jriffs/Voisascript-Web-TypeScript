@@ -14,7 +14,7 @@
     import { convertURIToBinary } from "../../misc/file-extract";
     import { Modal } from "../modal";
     import { updateUserData } from "../../misc/update-user-data";
-    // import Ace from "../../misc/ace-min/ace";
+    import ace, { Ace } from "ace-builds"
 
     
     let animateAudioWave = {
@@ -234,26 +234,17 @@
         screen.set({current: 'Record audio', previous: ''})
     }
 
-    let EditorScriptLoaded: boolean, editorModeValue: string
+    let editorModeValue: string
 
-    $: if (EditorScriptLoaded && editorModeValue) {
-            let CD = document.querySelector("#editor")
-            window.ace.config.set('basePath', '/')
-            let editor = window.ace.edit(CD);
-            editor.setTheme("ace/theme/cobalt");
-            editor.session.setMode(`ace/mode/${editorModeValue}`);
-            console.log(editor)
+    $: if (editorModeValue) {
+        let CD = document.querySelector("#editor") as HTMLElement
+        let editor = ace.edit(CD)
+        ace.config.set('basePath', '/src-min-noconflict/')
+        editor.setTheme("ace/theme/cobalt")
+        editor.session.setMode(`ace/mode/${editorModeValue}`)
     }
     
-    function InitEditor() {
-        EditorScriptLoaded = true
-        // console.log('Editor Script Initialized')        
-    }
 </script>
-
-<svelte:head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.14.0/ace.js" integrity="sha512-WYlXqL7GPpZL2ImDErTX0RMKy5hR17vGW5yY04p9Z+YhYFJcUUFRT31N29euNB4sLNNf/s0XQXZfzg3uKSoOdA==" crossorigin="anonymous" referrerpolicy="no-referrer" on:load={InitEditor}></script>
-</svelte:head>
 
 {#if $screen.current === 'Record-Audio-2'}
     <div transition:fade class="main-record-audio-content">

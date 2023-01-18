@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@types/webextension-polyfill": "^0.9.0",
+    "ace-builds": "^1.14.0",
     "lamejs": "^1.2.1",
     "lamejstmp": "^1.0.1",
     "wavesurfer.js": "^6.3.0",

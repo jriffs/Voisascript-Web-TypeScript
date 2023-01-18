@@ -7,13 +7,23 @@
             "responseHeaders": [
                 {
                     "header": "content-security-policy",
-                    "operation": "append",
-                    "value": "media-src github.com user-images.githubusercontent.com/ secured-user-images.githubusercontent.com/ firebasestorage.googleapis.com/"
+                    "operation": "remove"
                 }
             ] 
         },
         "condition" : {
-            "urlFilter" : "|https*",
+            "initiatorDomains" : ["github.com"],
+            "resourceTypes" : ["main_frame"]
+        }
+    },
+    {
+        "id" : 3,
+        "priority": 1,
+        "action" : { 
+            "type" : "allow" 
+        },
+        "condition" : {
+            "urlFilter" : "firebasestorage",
             "domains" : ["github.com"],
             "resourceTypes" : ["media"]
         }

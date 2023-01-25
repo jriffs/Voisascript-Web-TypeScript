@@ -32,15 +32,16 @@
         }
         try {
             const {userData} = await Browser.storage.local.get('userData')
+            // console.log(userData.userToken)            
             const data = new FormData()
             data.append('Project_Name', projectName)
-            data.append('Project_Desc', projectDesc)
-            // console.log(userData.userToken)            
+            data.append('Project_Desc', projectDesc)            
             const headers = {
                 "authorization": `Bearer ${userData.userToken}`,
                 "originator": `extension`
             }
-            const response = await fetch('http://localhost:5000/projects/create', {
+            console.log(headers.authorization)            
+            const response = await fetch('https://voisascript-file-storage.herokuapp.com/projects/create', {
                 method: 'POST',
                 // mode: 'no-cors',
                 headers: headers,
@@ -58,6 +59,7 @@
                 })
                 return
             }
+            console.log(response)            
             notify({
                 type: 'error',
                 message: `Error - ${Data.error}`,
@@ -67,7 +69,7 @@
         } catch (error) {
             notify({
                 type: 'error',
-                message: `Error - ${error}`,
+                message: `Error - ${error} and in`,
                 delay: 3
             })
             BtnLoading = false

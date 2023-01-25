@@ -6,8 +6,9 @@
         const text = `${placeholderText}`
         screen.set({current: text, previous: currentScreen})
     }
+    let BtnDisabled: boolean
 </script>
-<BtnSecondary BtnText={placeholderText} func={handleButtonClick}/>
+<BtnSecondary BtnText={placeholderText} func={handleButtonClick} {BtnDisabled}/>
 
 <style>
     

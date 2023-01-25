@@ -22,13 +22,13 @@
                 })
                 return
             }
-            if (tab?.url?.split('//')[1]?.includes('voisascript.com/auth/ext?Bearer=')) {
+            if (tab?.url?.split('//')[1]?.includes('voisascript-auth.herokuapp.com/success-page.html?Bearer=')) {
                 let bearer = tab.url.split('//')[1].split('=')[1]
                 const headers = {
                     "authorization": `Bearer ${bearer}`,
                     "originator": `extension`
                 }
-                const response = await fetch('http://localhost:3000/user/validate?sign-in=true', {
+                const response = await fetch('https://voisascript-auth.herokuapp.com/user/validate?sign-in=true', {
                     method: 'GET',
                     // mode: 'no-cors',
                     headers: headers

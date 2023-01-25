@@ -5,27 +5,59 @@
     import NavButton from "./navigation-buttons.svelte";
     import Browser from "webextension-polyfill";
     
-    let username: string
-    $: if ($screen.current == 'dashboard') {
-        Browser.storage.local.get('userData').then(({userData}) => {
-            console.log(userData)        
-            if (!userData) return
-            username = userData?.username
-        }) 
+    const userDataPromise = Browser.storage.local.get('userData')   
+    async function showsomn() {
+        const data = await userDataPromise
+        console.log(data)        
     }
+    showsomn()
 </script>
 
 {#if $screen.current === 'dashboard'}
     <Header/>
     <div transition:fade class="dashboard-content">
         <div class="welcome">
-           <p>Welcome back {username},</p> 
+            <p>Welcome back 
+                {#await userDataPromise}
+                    User
+                {:then userData} 
+                    {userData.userData.username}
+                {/await},
+            </p> 
         </div>
         <div class="navigate-area">
             <NavButton placeholderText={'Record audio'}/>
             <NavButton placeholderText={'Manage projects'}/>
         </div>
-        <div class="stats-area"></div>
+        <div class="stats-area">
+            <div class="stats-1">
+                <span>
+                    {#await userDataPromise}
+                        0
+                    {:then userData} 
+                        {userData.userData.stats.projects}
+                    {/await}
+                </span>
+                <h4>Projects</h4>
+                <div class="pic-container">
+                   <div class="projects-pic"></div> 
+                </div>
+            </div>
+            <div class="stats-2">
+                <span>
+                    {#await userDataPromise}
+                        0
+                    {:then userData} 
+                        {userData.userData.stats.files}
+                    {/await}
+                </span>
+                <h4>Files</h4>
+                <div class="pic-container">
+                   <div class="files-pic"></div> 
+                </div>
+                
+            </div>
+        </div>
     </div> 
 {/if}
 
@@ -66,8 +98,130 @@
     .stats-area{
         min-height: 250;
         min-width: 440;
-        background: #e9e7e7;
         margin-top: 70;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .stats-area .stats-1{
+        display: flex;
+        width: 50%;
+        margin-inline-end: 10px;
+    }
+    .stats-area .stats-1 span{
+        font-family:  'Space Grotesk';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 40px;
+        line-height: 48px;
+        letter-spacing: -0.02em;
+        color: #ffffff;
+        padding: 10px;
+        background: #1e7ddf;
+        border-radius: 35px;
+        height: 50px;
+        width: 50px;
+        text-align: center;
+        position: relative;
+        left: 155px;
+        z-index: 1;
+    }
+    .stats-1 h4{
+        height: 20px;
+        width: 120px;
+        border-radius: 15px;
+        padding: 8px;
+        background: #d3e7fd;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 17px;
+        line-height: 24px;
+        color: #1e7ddf;
+        position: relative;
+        top: 105px;
+        left: 50px;
+        z-index: 3;
+    }
+    .pic-container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #faf9f9;
+        padding: 5px;
+        min-width: fit-content;
+        min-height: fit-content;
+        border-radius: 76px;
+        z-index: 2;
+    }
+    .projects-pic{
+        display: flex;
+        background: url("../../icons/project-management.avif");
+        background-size: cover;
+        background-repeat: no-repeat;
+        content: " ";
+        width: 150px;
+        height: 150px;
+        border-radius: 76px;
+    }
+    .stats-area .stats-2{
+        display: flex;
+        width: 50%;
+        flex-direction: row-reverse;
+        margin-inline-start: 10px;    
+    }
+    .stats-area .stats-2 span{
+        font-family:  'Space Grotesk';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 40px;
+        line-height: 48px;
+        letter-spacing: -0.02em;
+        color: #ffffff;
+        padding: 10px;
+        background: #1e7ddf;
+        border-radius: 35px;
+        height: 50px;
+        width: 50px;
+        text-align: center;
+        z-index: 1;
+        position: relative;
+        top: 90px;
+        left: -155px;
+    }
+    .stats-2 h4{
+        height: 20px;
+        width: 120px;
+        border-radius: 15px;
+        padding: 8px;
+        background: #d3e7fd;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 17px;
+        line-height: 24px;
+        color: #1e7ddf;
+        position: relative;
+        left: -50px;
+        z-index: 3;
+    }
+    .files-pic{
+        display: flex;
+        background: url("../../icons/audio-files.avif");
+        background-size: cover;
+        background-repeat: no-repeat;
+        content: " ";
+        width: 150px;
+        height: 150px;
+        border-radius: 15px;
     }
 </style>
 

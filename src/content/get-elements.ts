@@ -18,7 +18,7 @@ function checkSyntax(elementArr: Element[]): void {
         if (element.localName !== 'script') {
             let nodes = element.childNodes
             nodes.forEach(node => {
-                if (node.nodeValue !== null && node.nodeValue.includes('http://localhost:5000')) {
+                if (node.nodeValue !== null && node.nodeValue.includes('https://voisascript-file-storage.herokuapp.com/files/')) {
                     let text = `${node?.textContent?.split(' ').find((val) => val.includes('http'))}`                     
                     valueArr.push({element: element, ID: `${element.id}`, text: `${text}`})                    
                 }

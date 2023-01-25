@@ -48,7 +48,7 @@
                 "authorization": `Bearer ${userData.userToken}`,
                 "originator": `extension`
             }
-            const response = await fetch('http://localhost:5000/projects/update', {
+            const response = await fetch('https://voisascript-file-storage.herokuapp.com/projects/update', {
                 method: 'PUT',
                 // mode: 'no-cors',
                 headers: headers,

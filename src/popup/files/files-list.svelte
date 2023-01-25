@@ -120,7 +120,7 @@
                 authorization: `Bearer ${userToken}`,
                 originator: `Extension`
             }
-            const response = await fetch('http://localhost:5000/files/delete', {
+            const response = await fetch('https://voisascript-file-storage.herokuapp.com/files/delete', {
                 method: 'DELETE',
                 headers: headers,
                 body: data

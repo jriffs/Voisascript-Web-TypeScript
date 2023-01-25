@@ -179,7 +179,7 @@
                     authorization: `Bearer ${userToken}`,
                     originator: `Extension`
                 }
-                const response = await fetch('http://localhost:5000/files/upload', {
+                const response = await fetch('https://voisascript-file-storage.herokuapp.com/files/upload', {
                     method: 'POST',
                     headers: headers,
                     body: data

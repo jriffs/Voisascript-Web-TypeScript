@@ -7,10 +7,9 @@
     
     const userDataPromise = Browser.storage.local.get('userData')   
     async function showsomn() {
-        const data = await userDataPromise
-        console.log(data)        
+        const data = await userDataPromise        
     }
-    showsomn()
+    $: if ($screen.current === 'dashboard') showsomn()
 </script>
 
 {#if $screen.current === 'dashboard'}

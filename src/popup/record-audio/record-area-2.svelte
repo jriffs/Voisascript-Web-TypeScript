@@ -175,37 +175,46 @@
             const { userData } = await Browser.storage.local.get('userData')
             const { userToken } = userData
             if (userToken) {
-                const headers = {
-                    authorization: `Bearer ${userToken}`,
-                    originator: `Extension`
-                }
-                const response = await fetch('https://voisascript-file-storage.herokuapp.com/files/upload', {
-                    method: 'POST',
-                    headers: headers,
-                    body: data
-                })
-                const ResponseData = await response.json()
-                console.log(ResponseData)                
-                if (response.ok === true) {
-                    updateUserData(ResponseData.userToken, ResponseData, ResponseData.username).then(async() => {
-                        BtnLoading = false
-                        notify({
-                            delay: 3,
-                            message: 'File uploaded successfully 🤙🤙',
-                            type: 'success' 
+                try {
+                    const headers = {
+                        authorization: `Bearer ${userToken}`,
+                        originator: `Extension`
+                    }
+                    const response = await fetch('https://voisascript-file-storage.herokuapp.com/files/upload', {
+                        method: 'POST',
+                        headers: headers,
+                        body: data
+                    })
+                    const ResponseData = await response.json()
+                    console.log(ResponseData)                
+                    if (response.ok === true) {
+                        updateUserData(ResponseData.userToken, ResponseData, ResponseData.username).then(async() => {
+                            BtnLoading = false
+                            notify({
+                                delay: 3,
+                                message: 'File uploaded successfully 🤙🤙',
+                                type: 'success' 
+                            })
+                            fileURL.set(ResponseData?.url)
+                            screen.set({current: 'Record audio 3', previous: ''})
                         })
-                        fileURL.set(ResponseData?.url)
-                        screen.set({current: 'Record audio 3', previous: ''})
+                        return 
+                    }
+                    BtnLoading = false
+                    notify({
+                        message: `Server Error -> ${response.statusText}`,
+                        type: 'error',
+                        delay: 3
                     })
                     return 
+                } catch (error) {
+                    notify({
+                        message: `Server Error -> ${error}`,
+                        type: 'error',
+                        delay: 3
+                    })
                 }
-                BtnLoading = false
-                notify({
-                    message: `Server Error -> ${response.statusText}`,
-                    type: 'error',
-                    delay: 3
-                })
-                return
+                
             }
             BtnLoading = false
             notify({

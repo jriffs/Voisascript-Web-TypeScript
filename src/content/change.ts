@@ -20,7 +20,6 @@ export async function changeElement(contentArr: ElementValues[]) {
         const urls = await Promise.all(promises)              
         if (urls.length > 0) {
             for (let i = 0; i < contentArr.length; i++) {
-                // console.log(contentArr[i].element)
                 contentArr[i].element.textContent = ''
                 let container = document.createElement('div')
                 container.classList.add('cont')

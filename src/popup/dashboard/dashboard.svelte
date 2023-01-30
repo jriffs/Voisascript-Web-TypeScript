@@ -4,12 +4,8 @@
     import Header from "../header.svelte";
     import NavButton from "./navigation-buttons.svelte";
     import Browser from "webextension-polyfill";
-    
-    const userDataPromise = Browser.storage.local.get('userData')   
-    async function showsomn() {
-        const data = await userDataPromise        
-    }
-    $: if ($screen.current === 'dashboard') showsomn()
+    let userDataPromise: Promise<Record<string, any>>
+    $: if ($screen.current === 'dashboard') userDataPromise = Browser.storage.local.get('userData')
 </script>
 
 {#if $screen.current === 'dashboard'}
@@ -150,7 +146,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background: #faf9f9;
         padding: 5px;
         min-width: fit-content;
         min-height: fit-content;

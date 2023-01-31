@@ -32,11 +32,8 @@
     "default_popup": "popup/popup.html"      
   },
   "permissions": [
-    "webRequest",
-    "contextMenus",
     "storage",
     "tabs",
-    "browsingData",
     "declarativeNetRequest",
     "declarativeNetRequestWithHostAccess",
     "declarativeNetRequestFeedback",

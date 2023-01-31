@@ -6,7 +6,7 @@ import { getURL} from "../background/get-url";
 
 console.log(`i'm here 😁`)
 
-Browser.contextMenus.create({
+/* Browser.contextMenus.create({
 	id: 'voisascript',
 	title: 'record audio comment',
 	contexts: ['selection'],
@@ -18,7 +18,7 @@ Browser.contextMenus.onClicked.addListener((details) => {
 		return
 	}
 	Browser.action.openPopup()
-})
+}) */
 
   
 Browser.runtime.onMessage.addListener(async (message: any, sender: Browser.Runtime.MessageSender) => {

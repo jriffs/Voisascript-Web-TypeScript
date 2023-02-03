@@ -17,16 +17,22 @@ let testSending: any
 
 createRecordArea()
 InitializeAudio()
+console.log(body)
+
 
 async function checkNchange(this: HTMLElement, ev: MouseEvent) {
+    console.log("Transform has started")    
     const {ContentScriptTransform} = await Browser.storage.local.get('ContentScriptTransform')
+    console.log(ContentScriptTransform)    
     if (ContentScriptTransform.value == false) {
         this.removeEventListener('click', checkNchange)
         return
     }
     let content = getElementsWithKeywords(elements)
+    console.log(content)    
     if (content.length > 0) {        
-        changeElement(content).then((result) => {            
+        changeElement(content).then((result) => {  
+            console.log(result)                      
             if (result.update == 'change successful') {
                 audioControl()            
                 this.removeEventListener('click', checkNchange)               

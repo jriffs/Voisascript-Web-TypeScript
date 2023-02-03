@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "VoisaScript",
-  "version": "1.0.0.0",
+  "version": "1.0.0.1",
   "description": "Record and Play audio comments.",
   "icons": {
     "48": "icons/V2-2.png"

@@ -4,7 +4,7 @@ import Browser from "webextension-polyfill"
 import { changeHeaders } from "./webRequest";
 import { getURL} from "../background/get-url";
 
-console.log(`i'm here 😁`)
+console.log(`Background script running ...`)
 
 /* Browser.contextMenus.create({
 	id: 'voisascript',
@@ -32,6 +32,6 @@ if (!chrome) {
 	changeHeaders()
 }
 
-chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
+/* chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
 	console.log(info)	
-})
+}) */

@@ -17,11 +17,10 @@ let testSending: any
 
 createRecordArea()
 InitializeAudio()
-console.log(body)
 
 
 async function checkNchange(this: HTMLElement, ev: MouseEvent) {
-    console.log("Transform has started")    
+    console.log("Transform started")    
     const {ContentScriptTransform} = await Browser.storage.local.get('ContentScriptTransform')
     console.log(ContentScriptTransform)    
     if (ContentScriptTransform.value == false) {
@@ -44,7 +43,7 @@ async function checkNchange(this: HTMLElement, ev: MouseEvent) {
     this.removeEventListener('click', checkNchange)            
 }
 
-body.addEventListener('click', checkNchange)
+body.addEventListener('dblclick', checkNchange)
 
 async function InitializeAudio(): Promise<void> {
     was = new WAS()

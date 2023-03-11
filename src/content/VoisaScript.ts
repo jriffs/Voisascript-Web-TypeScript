@@ -78,15 +78,26 @@ Browser.runtime.onMessage.addListener( async (request: OnMessageRequestValue) =>
             break;
         case 'stop':
             was.stopRecording()
+            let blobTxt           
             if (was.state() == 'inactive' && was.buff()) {               
-                const reader = new FileReader()
-                reader.onload = function (event: ProgressEvent<FileReader>){                    
+                const reader = new FileReader()                
+                /* reader.onload = function (event: ProgressEvent<FileReader>){                    
                     testSending = event?.target?.result
                 }
                 const audBlob = was.buff() as Blob
-                reader.readAsDataURL(audBlob)
+                reader.readAsDataURL(audBlob) */
+                blobTxt = await new Promise((resolve, reject) => {
+                    const audBlob = was.buff() as Blob
+                    reader.readAsDataURL(audBlob)
+                    reader.onload = function (event: ProgressEvent<FileReader>){                    
+                        resolve(event?.target?.result)
+                    }
+                    reader.onerror = function (event: ProgressEvent<FileReader>){                    
+                        reject({error: event.target?.error})
+                    }
+                })                
             }
-            return Promise.resolve({recorderState: was.state()})
+            return Promise.resolve({recorderState: was.state(), blobTxt})
             break;
         case 'retreive':
             return Promise.resolve({recorderState: was.state()})

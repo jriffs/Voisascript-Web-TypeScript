@@ -34,7 +34,8 @@ export interface userData {
     stats: {
         projects: number,
         files: number
-    }
+    },
+    url?: string
 }
 
 export type cmc = "retreive" | "resume" | "pause" | "start" | "stop" | "review"

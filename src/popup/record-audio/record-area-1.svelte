@@ -2,7 +2,7 @@
     import { screen, recordParams } from "../store";
     import { fade, fly, scale, slide, draw, crossfade, blur } from "svelte/transition";
     import BackHeader from "../back-header.svelte";
-    import { userProjects } from "../../interfaces/interfaces";
+    import { userFiles, userProjects } from "../../interfaces/interfaces";
     import Browser from "webextension-polyfill";
     import { notify } from "../notification";
     import { communicateWithContent } from "../communicate";
@@ -32,6 +32,18 @@
 
     async function handlebuttonClick() {
         if (optionsValue && fileName) {
+            const {userData} = await Browser.storage.local.get('userData')
+            const files = userData.files as [userFiles[]]
+            const projects = userData.projects as userProjects[]          
+            const ind = projects.findIndex((projects)=> projects.projectName == optionsValue.split('~')[0])
+            if (files[ind].find((p) => p.File_Name == fileName + ".mp3") !== undefined) {
+                notify({
+                    type: "error",
+                    message: "filename already exists for the chosen project",
+                    delay: 5
+                })
+                return                
+            }                                   
             try {
                 const {received, error} = await communicateWithContent('retreive')
                 if (received) {
@@ -65,9 +77,9 @@
             return
         }
         notify({
-                type: 'error',
-                message: 'Please select a Project And Name the file',
-                delay: 3
+            type: 'error',
+            message: 'Please select a Project And Name the file',
+            delay: 3
         })
     }
     let showProjects: boolean = false

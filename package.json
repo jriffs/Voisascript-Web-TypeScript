@@ -25,6 +25,7 @@
     "parcel": "^2.8.0",
     "parcel-transformer-svelte": "^1.2.3",
     "parcel-transformer-svelte3-plus": "^0.2.8",
+    "path-browserify": "^1.0.1",
     "svelte-check": "^2.9.2",
     "svelte-preprocess": "^4.10.7",
     "ts-loader": "^9.3.1",

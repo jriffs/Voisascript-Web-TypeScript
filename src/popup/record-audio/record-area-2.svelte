@@ -15,6 +15,7 @@
     import { Modal } from "../modal";
     import { updateUserData } from "../../misc/update-user-data";
     import ace, { Ace } from "ace-builds"
+    import { HandleTask } from "../../misc/handleTask";
 
     
     let animateAudioWave = {
@@ -53,14 +54,14 @@
                     })              
                     break;
                 case 'recording':
-                    await communicateWithContent('pause')
-                    BtnControlsLoading = false
                     timerAction = 'pause'
                     animateAudioWave = {
                         play: false,
                         pause: true,
                         stop: false
                     }
+                    await communicateWithContent('pause')
+                    BtnControlsLoading = false
                     recordParams.set({
                         Recorderstate: 'paused',
                         project,
@@ -97,43 +98,39 @@
         BtnControlsLoading = true
         notify({
             type: 'info',
-            message: 'Please wait while audio being prepared 👍👍'
+            message: 'Please wait while audio is being prepared 👍👍'
         })
         let project = $recordParams.project, fileName = $recordParams.fileName
         let state: CmcResult
         if ($recordParams.Recorderstate !== 'inactive') {
-           try {
+            try {
                 state = await communicateWithContent('retreive')
                 const {recorderState} = state.received
                 if (recorderState !== 'inactive') {
-                    await communicateWithContent('stop')
-                    BtnControlsLoading = false
-                    state = await communicateWithContent('retreive')
-                    if (state?.received?.recorderState === 'inactive') {
-                        const {received} = await communicateWithContent('review')
-                        const {audioBlobText} = received
-                        if (audioBlobText) {
-                            let binary = convertURIToBinary(audioBlobText)
-                            let audioBlob = new Blob([binary], {type: 'audio/webm'})
-                            recordParams.set({
-                                Recorderstate: 'inactive',
-                                project,
-                                fileName,
-                                file: audioBlob
-                            })
-                            notify({
-                                type: 'success',
-                                message: `Your Audio is ready 👌👌`,
-                                delay: 3
-                            })
-                            return
-                        }
+                    const {received} = await communicateWithContent('stop')
+                    const {recorderState, blobTxt} = received
+                    if (recorderState == "inactive" && blobTxt) {                        
+                        let binary = convertURIToBinary(blobTxt)
+                        let audioBlob = new Blob([binary], {type: 'audio/webm'})
+                        recordParams.set({
+                            Recorderstate: 'inactive',
+                            project,
+                            fileName,
+                            file: audioBlob
+                        })
                         notify({
-                            type: 'error',
-                            message: `Internal Error: System couldn't Prepare Audio`,
-                            delay: 3
-                        })                  
-                    }                             
+                            type: 'success',
+                            message: `Your Audio is ready 👌👌`
+                        })
+                        BtnControlsLoading = false
+                        return
+                    }
+                    notify({
+                        type: 'error',
+                        message: `Internal Error: System couldn't Prepare Audio`,
+                        delay: 3
+                    })
+                    return                                                                                        
                 }
             } catch (error) {
                 notify({
@@ -176,37 +173,27 @@
             const { userToken } = userData
             if (userToken) {
                 try {
-                    const headers = {
-                        authorization: `Bearer ${userToken}`,
-                        originator: `Extension`
-                    }
-                    const response = await fetch('https://voisascript-file-storage.herokuapp.com/files/upload', {
-                        method: 'POST',
-                        headers: headers,
-                        body: data
-                    })
-                    const ResponseData = await response.json()
-                    console.log(ResponseData)                
-                    if (response.ok === true) {
-                        updateUserData(ResponseData.userToken, ResponseData, ResponseData.username).then(async() => {
-                            BtnLoading = false
-                            notify({
-                                delay: 3,
-                                message: 'File uploaded successfully 🤙🤙',
-                                type: 'success' 
-                            })
-                            fileURL.set(ResponseData?.url)
-                            screen.set({current: 'Record audio 3', previous: ''})
+                    const handleTask = new HandleTask("http://localhost:5000/files/upload", data, userToken)
+                    handleTask.on("complete", (url)=> {
+                        BtnLoading = false;
+                        notify({
+                            delay: 3,
+                            message: 'File uploaded successfully 🤙🤙',
+                            type: 'success' 
                         })
-                        return 
-                    }
-                    BtnLoading = false
-                    notify({
-                        message: `Server Error -> ${response.statusText}`,
-                        type: 'error',
-                        delay: 3
+                        fileURL.set(url)
+                        screen.set({current: 'Record audio 3', previous: ''})                
                     })
-                    return 
+                    handleTask.on("error", (message)=> {
+                        notify({
+                            type: "error",
+                            message: `Error - ${message}`,
+                            delay: 3,
+                        })
+                        BtnLoading = false
+                    })
+                    handleTask.start()
+                    return
                 } catch (error) {
                     notify({
                         message: `Server Error -> ${error}`,
@@ -214,8 +201,7 @@
                         delay: 3
                     })
                 }
-                
-            }
+            }            
             BtnLoading = false
             notify({
                 message: 'Internal System Error - User is Not Recognized',

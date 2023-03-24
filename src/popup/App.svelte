@@ -15,6 +15,7 @@
     import EditProject from "./projects/edit-project.svelte";
     import Settings from "./settings/settings.svelte";
     import ManageFiles from "./files/manage-files.svelte";
+    import TaskMonitor from "./Task-area/task-monitor.svelte";
     // import Loading from "./backdrop/loading.svelte";
 
     // let data: unknown
@@ -28,7 +29,7 @@
         screen.set({current: 'sign-in', previous: ''})
     }
     checkIfUser()
-    // screen.set({current: 'Manage projects', previous: ''})
+    // screen.set({current: 'Task-Monitor', previous: ''})
 </script>
 
 <main>
@@ -43,6 +44,7 @@
     <EditProject/>
     <ManageFiles/>
     <Settings/>
+    <TaskMonitor/>
 
     <Modal/>
 </main>

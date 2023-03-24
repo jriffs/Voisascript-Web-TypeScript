@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { screen, recordParams, fileURL} from "../store";
-    import { fade, fly, scale, slide, draw, crossfade, blur } from "svelte/transition";
-    import { onMount } from "svelte";
-    import Header from "../header.svelte";
-    import { CmcResult, userProjects } from "../../interfaces/interfaces";
+    import { screen, recordParams, fileURL, Task_Monitor } from "../store";
+    import { fade } from "svelte/transition";
+    // import { onMount } from "svelte";
+    // import Header from "../header.svelte";
+    import { CmcResult } from "../../interfaces/interfaces";
     import AudioWave from "../audio-wave.svelte";
     import Browser from "webextension-polyfill";
     import { notify } from "../notification";
@@ -13,9 +13,10 @@
     import Timer from "./recorder-time.svelte";
     import { convertURIToBinary } from "../../misc/file-extract";
     import { Modal } from "../modal";
-    import { updateUserData } from "../../misc/update-user-data";
+    // import { updateUserData } from "../../misc/update-user-data";
     import ace, { Ace } from "ace-builds"
     import { HandleTask } from "../../misc/handleTask";
+    import RecordObserver from "../../misc/record-observer";
 
     
     let animateAudioWave = {
@@ -28,6 +29,7 @@
 
     let btnText1 = 'Cancel', btnText2 = 'Upload',
     timerAction: string
+    const recorderObserver = new RecordObserver()
 
     async function handlePlayButton() {
         BtnControlsLoading = true
@@ -39,6 +41,7 @@
             switch (received.recorderState) {
                 case 'paused':
                     await communicateWithContent('resume')
+                    recorderObserver.resumeRObserver()
                     BtnControlsLoading = false
                     timerAction = 'start'
                     animateAudioWave = {
@@ -61,6 +64,7 @@
                         stop: false
                     }
                     await communicateWithContent('pause')
+                    recorderObserver.pauseRObserver()
                     BtnControlsLoading = false
                     recordParams.set({
                         Recorderstate: 'paused',
@@ -71,6 +75,14 @@
                     break;
                 case 'inactive':
                     await communicateWithContent('start')
+                    recorderObserver.startRObserver(async ()=> {
+                        notify({
+                            type: "info",
+                            message: "You currently cannot record audio more than 1 minutes",
+                            delay: 5
+                        })
+                        await handleStopButton()
+                    })
                     BtnControlsLoading = false
                     timerAction = 'start'
                     animateAudioWave = {
@@ -89,6 +101,7 @@
         }       
     }
     async function handleStopButton() {
+        recorderObserver.stopRObserver()
         timerAction = 'reset'
         animateAudioWave = {
             play: false,
@@ -109,9 +122,11 @@
                 if (recorderState !== 'inactive') {
                     const {received} = await communicateWithContent('stop')
                     const {recorderState, blobTxt} = received
+                    console.log(blobTxt)                    
                     if (recorderState == "inactive" && blobTxt) {                        
                         let binary = convertURIToBinary(blobTxt)
                         let audioBlob = new Blob([binary], {type: 'audio/webm'})
+                        console.log(audioBlob)                        
                         recordParams.set({
                             Recorderstate: 'inactive',
                             project,
@@ -173,8 +188,8 @@
             const { userToken } = userData
             if (userToken) {
                 try {
-                    const handleTask = new HandleTask("http://localhost:5000/files/upload", data, userToken)
-                    handleTask.on("complete", (url)=> {
+                    const handleTask = new HandleTask("https://voisascript-file-storage.herokuapp.com/files/upload", data, userToken)
+                    const handleTaskComplete = (url: string)=> {
                         BtnLoading = false;
                         notify({
                             delay: 3,
@@ -183,7 +198,8 @@
                         })
                         fileURL.set(url)
                         screen.set({current: 'Record audio 3', previous: ''})                
-                    })
+                    }
+                    handleTask.on("complete", handleTaskComplete)
                     handleTask.on("error", (message)=> {
                         notify({
                             type: "error",
@@ -191,6 +207,48 @@
                             delay: 3,
                         })
                         BtnLoading = false
+                        Task_Monitor.update((task_arr)=> {
+                            if (task_arr.find((task)=> task.id === $recordParams.fileName)) {
+                                let index = task_arr.findIndex((task)=> task.id === $recordParams.fileName)
+                                task_arr[index].state = "failed"
+                                return task_arr
+                            } else {
+                                const newTask = {
+                                    name: 'Upload Task',
+                                    id: $recordParams.fileName,
+                                    state: "failed"
+                                }
+                                task_arr.push(newTask)
+                                return task_arr
+                            }
+                        })
+                    })
+                    handleTask.on("task-awaiting", ()=> {
+                        BtnLoading = false;
+                        notify({
+                            delay: 5,
+                            message: 'Task is taking too long, Monitor it in the Task Monitor Tab',
+                            type: 'info' 
+                        })
+                        handleTask.removeListener("complete", handleTaskComplete)
+                        handleTask.on("complete", (url)=> {
+                            fileURL.set(url)
+                            Task_Monitor.update((task_arr)=> {
+                                let index = task_arr.findIndex((task)=> task.id === $recordParams.fileName)
+                                task_arr[index].state = "success"
+                                return task_arr
+                            })
+                        })
+                        Task_Monitor.update((task_arr)=> {
+                            const newTask = {
+                                name: 'Upload Task',
+                                id: $recordParams.fileName,
+                                state: "pending"
+                            }
+                            task_arr.push(newTask)
+                            return task_arr
+                        })
+                        screen.set({current: 'Task-Monitor', previous: ''})
                     })
                     handleTask.start()
                     return

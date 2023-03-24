@@ -54,4 +54,10 @@ export type CmcResult = CmcResultSuccess | CmcResultError
 
 export type callback = (this: HTMLElement, ev: MouseEvent) => any 
 
+export type taskDetails = {
+    name: string,
+    state: string,
+    id: string
+}
+
 

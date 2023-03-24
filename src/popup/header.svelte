@@ -11,6 +11,9 @@
     function settingsClick(){
         screen.set({current: 'Settings', previous: ''})
     }
+    function notificationClick() {
+        screen.set({current: 'Task-Monitor', previous: ''})
+    }
 </script>
 
 <div class="header">
@@ -19,6 +22,9 @@
         <h5>Voisascript</h5>
     </div>
     <div class="settings-area">
+        <button on:click={notificationClick}>
+            <img src="../icons/notification.svg" alt="notification" />
+        </button>
         <button on:click={settingsClick}>
            <img src="../icons/settings.svg" alt="settings" /> 
         </button>

@@ -11,8 +11,8 @@
                 return index                
             }else return
         } 
-        const {record, CreateProject, files, EditProject, Settings} = $history
-        const subhistories = [record, CreateProject, files, EditProject, Settings]
+        const {record, CreateProject, files, EditProject, Settings, task} = $history
+        const subhistories = [record, CreateProject, files, EditProject, Settings, task]
         for (let i = 0; i < subhistories.length; i++) {           
             const screenIndex = checkHistory(subhistories[i], $screen.current)
             console.log(screenIndex)                        

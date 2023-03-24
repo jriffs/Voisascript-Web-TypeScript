@@ -1,4 +1,4 @@
-import { userProjects } from "src/interfaces/interfaces";
+import { taskDetails, userProjects } from "../interfaces/interfaces";
 import { writable } from "svelte/store";
 
 export const notification = writable(
@@ -28,7 +28,8 @@ export const history = writable({
     CreateProject: ['dashboard', 'Manage projects', 'Create project'],
     EditProject: ['dashboard', 'Manage projects', 'Edit project'],
     Settings: ['dashboard', 'Settings'],
-    files: ['dashboard', 'Manage projects', 'Manage files']
+    files: ['dashboard', 'Manage projects', 'Manage files'],
+    task: ['dashboard', 'Task-Monitor']
 })
 
 export const showModal = writable(false)
@@ -62,4 +63,6 @@ export const reviewedProjectIndex = writable({
     projectName: '',
     projectDesc: '',
     projectID: ''
-}) 
+})
+
+export const Task_Monitor = writable<taskDetails[]>([])

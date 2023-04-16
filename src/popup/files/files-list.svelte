@@ -88,7 +88,7 @@
     }
 
     function handleCopy() {
-        navigator.clipboard.writeText(`https://voisascript-file-storage.heroku.com/files/${file.Project_ID}/url?filename=${file.File_Name}`)
+        navigator.clipboard.writeText(`https://voisascript-file-storage.herokuapp.com/files/${file.Project_ID}/url?filename=${file.File_Name}`)
         notify({
             delay: 3,
             message: 'File copied successfully 🤙🤙',

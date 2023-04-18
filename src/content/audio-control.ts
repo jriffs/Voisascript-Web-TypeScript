@@ -1,11 +1,10 @@
 import Browser from "webextension-polyfill"
 import { convertMin } from "../misc/convert-min";
+import WaveSurfer from "wavesurfer.js";
 
 export function audioControl() {
     let v_logos = document.querySelectorAll('.v-logo'),
     // audio_time = document.querySelector('.audio-time')!,
-    rewind_buttons = document.querySelectorAll('.rewind')!,
-    forward_buttons = document.querySelectorAll('.forward')!,
     play_buttons = document.querySelectorAll('.audio-control')
     
 
@@ -57,10 +56,6 @@ export function audioControl() {
 
     v_logos.forEach(v_logo => {
         v_logo.addEventListener('click', () => {
-            let audio = v_logo?.parentElement?.previousElementSibling as HTMLAudioElement
-            let audio_time = v_logo?.parentElement?.querySelector('.audio-time')!
-            active_audio_toggle(audio)
-            audio_time.textContent = convertMin(audio?.duration)
             let audioBox = v_logo.nextElementSibling!
             visibility_toggle(audioBox)        
         })
@@ -68,7 +63,7 @@ export function audioControl() {
 
     play_buttons.forEach(play_button => {
         play_button.addEventListener('click', () => {
-            let bars = play_button?.parentElement?.querySelector('.main-anim-container')?.children!        
+            /* let bars = play_button?.parentElement?.querySelector('.main-anim-container')?.children!        
             let v_audio = play_button.parentElement?.parentElement?.previousElementSibling as HTMLAudioElement
             let audio_time = play_button?.parentElement?.querySelector('.audio-time')!       
             if (v_audio.paused) {
@@ -89,11 +84,20 @@ export function audioControl() {
                 play_button.setAttribute("style", `content: url(${Browser.runtime.getURL('./icons/content/icons8-play-64.png')});`)
                 audio_time.textContent = convertMin(v_audio.currentTime)                        
             }
-            animateBar(bars)                                  
+            animateBar(bars)  */
+            let waveform = play_button?.nextElementSibling as HTMLElement
+            const wsAudio = WaveSurfer.create({
+                container: waveform
+            })
+            
+            wsAudio.load(`${waveform.id}`)
+            wsAudio.on("ready", () => {
+                console.log(`wavesurfer audio is ready`)                
+            })                               
         })
     })
 
-    rewind_buttons.forEach((rewind) => {
+    /* rewind_buttons.forEach((rewind) => {
         rewind.addEventListener('click', ()=>{
             let v_audio = rewind.parentElement?.parentElement?.parentElement?.previousElementSibling as HTMLAudioElement
             let audio_time = rewind?.parentElement?.parentElement?.querySelector('.audio-time')!
@@ -109,5 +113,5 @@ export function audioControl() {
             v_audio.currentTime += 5
             audio_time.textContent = convertMin(v_audio.currentTime)
         })
-    })
+    }) */
 }

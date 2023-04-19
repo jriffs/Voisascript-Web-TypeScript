@@ -25,7 +25,7 @@ export async function changeElement(contentArr: ElementValues[]) {
                 container.classList.add('cont')
                 container.innerHTML = `
                 <div class="hover-test-box">
-                    <div class="v-logo pulsate-bck" style="content: url(${Browser.runtime.getURL('./icons/Voisascript-1-1.png')});"></div>
+                    <div class="v-logo pulsate-bck" style="content: url(${Browser.runtime.getURL('./icons/V2-2.png')});"></div>
                     <span class="popup-audio" id="myPopup">
                         <div class="audio-control play" style="content: url(${Browser.runtime.getURL('./icons/content/icons8-play-64.png')});"></div>
                         <div class="waveform" id="${urls[i]}"></div>

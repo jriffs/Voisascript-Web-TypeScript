@@ -47,7 +47,8 @@ button{
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;    
+    justify-content: space-between;
+    border: 2px solid #2288f4;    
 }
 
 /* Popup arrow */
@@ -59,7 +60,7 @@ button{
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: #d3e7fd transparent transparent transparent;
+    border-color: #2288f4 transparent transparent transparent;
 }
 
 .popup-audio div{

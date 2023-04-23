@@ -25,14 +25,15 @@ export async function changeElement(contentArr: ElementValues[]) {
                 container.classList.add('cont')
                 container.innerHTML = `
                 <div class="hover-test-box">
-                    <div class="v-logo pulsate-bck" style="content: url(${Browser.runtime.getURL('./icons/V2-2.png')});"></div>
+                    <div class="v-logo pulsate-bck" style="content: url(${Browser.runtime.getURL('./icons/V2-3.png')});"></div>
                     <span class="popup-audio" id="myPopup">
-                        <div class="audio-control play" style="content: url(${Browser.runtime.getURL('./icons/content/icons8-play-64.png')});"></div>
+                        <div class="audio-control play" style="content: url(${Browser.runtime.getURL('./icons/blue-play-40.png')});"></div>
                         <div class="waveform" id="${urls[i]}"></div>
                     </span>
                 </div>
                 `        
                 contentArr[i]?.element?.parentElement?.appendChild(container)
+                console.log(urls[i])                
             }
             return {update: 'change successful'} 
         }

@@ -1,6 +1,6 @@
 import { ElementValues } from "../interfaces/interfaces.js"
 import Browser from "webextension-polyfill"
-import { getURL } from "../background/get-url"
+// import { getURL } from "../background/get-url"
 // changing all elements that have the keyword in them to... 
 // VoisaScript widgets with playable audio files.
 
@@ -24,28 +24,16 @@ export async function changeElement(contentArr: ElementValues[]) {
                 let container = document.createElement('div')
                 container.classList.add('cont')
                 container.innerHTML = `
-                <audio src="${urls[i]}" data-id="v-audio" class=""></audio>
                 <div class="hover-test-box">
-                    <div class="v-logo pulsate-bck" style="content: url(${Browser.runtime.getURL('./icons/Voisascript-1-1.png')});"></div>
+                    <div class="v-logo pulsate-bck" style="content: url(${Browser.runtime.getURL('./icons/V2-3.png')});"></div>
                     <span class="popup-audio" id="myPopup">
-                    <div class="audio-control play" style="content: url(${Browser.runtime.getURL('./icons/content/icons8-play-64.png')});"></div>
-                        <div class="seek-box">
-                            <div class="forward" style="content: url(${Browser.runtime.getURL('./icons/content/icons8-fast-forward-64.png')});"></div>
-                            <div class="rewind" style="content: url(${Browser.runtime.getURL('./icons/content/icons8-rewind-64.png')});"></div>
-                        </div>
-                        <span class="audio-time">3:13</span>
-                        <div class="main-anim-container">
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                        </div>
+                        <div class="audio-control play" style="content: url(${Browser.runtime.getURL('./icons/blue-play-40.png')});"></div>
+                        <div class="waveform" id="${urls[i]}"></div>
                     </span>
                 </div>
                 `        
                 contentArr[i]?.element?.parentElement?.appendChild(container)
+                console.log(urls[i])                
             }
             return {update: 'change successful'} 
         }

@@ -30,17 +30,14 @@ async function checkNchange(this: HTMLElement, ev: MouseEvent) {
     let content = getElementsWithKeywords(elements)
     console.log(content)    
     if (content.length > 0) {        
-        changeElement(content).then((result) => {  
-            console.log(result)                      
-            if (result.update == 'change successful') {
-                audioControl()            
-                this.removeEventListener('click', checkNchange)               
-            }
-            this.removeEventListener('click', checkNchange) 
-        })
+        const {update} = await changeElement(content)
+        if (update == 'change successful') {
+            audioControl()            
+            this.removeEventListener('dblclick', checkNchange)               
+        }
         return
     }
-    this.removeEventListener('click', checkNchange)            
+    this.removeEventListener('dblclick', checkNchange)            
 }
 
 body.addEventListener('dblclick', checkNchange)

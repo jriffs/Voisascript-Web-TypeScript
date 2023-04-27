@@ -9,6 +9,13 @@ Events.on('fileReader-load-sucess', (target: Function) => {
     target()
 })
 
+Events.on('checkNchangeComplete', (target: Function) => {
+    if (typeof target !== 'function') {
+        throw new Error('target parameter must be a function')
+    }
+    target()
+})
+
 Events.on('testing', () => {
     console.log('event working')    
 })

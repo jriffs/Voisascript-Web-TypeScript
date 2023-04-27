@@ -60,4 +60,8 @@ export type taskDetails = {
     id: string
 }
 
+export type uploadTasks = taskDetails & {
+    RID: string
+}
+
 

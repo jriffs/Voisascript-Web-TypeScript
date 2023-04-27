@@ -2,6 +2,16 @@
     import { Task_Monitor, screen } from "../store";
     import { fade } from "svelte/transition";
     import BackHeader from "../back-header.svelte";
+    import { persistTask, storeTask } from "../../misc/persist-task";
+
+    // persistTask(Task_Monitor)
+    const somn = [{
+        name: "name",
+        state: "state",
+        id: "id",
+        RID: "RID"
+    }] 
+    // storeTask(somn)
 </script>
 
 {#if $screen.current === 'Task-Monitor'}

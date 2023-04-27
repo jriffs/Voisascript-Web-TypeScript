@@ -9,11 +9,14 @@ export class HandleTask extends EventEmitter {
     private time_out: number = 5
     public poll_Successfull: boolean = false
     private observer = new TaskObserver()
+    public filename: string | undefined
 
     constructor(public url: string, 
         public data: FormData, 
         private userToken: string) {
         super()
+        const file = this.data.get("audio") as File
+        this.filename = file.name
     }
 
     /**
@@ -23,7 +26,7 @@ export class HandleTask extends EventEmitter {
         await this.observer.start(()=> {
             this.emit("task-awaiting")
         })
-        try {
+        try {            
             const headers = {
                 authorization: `Bearer ${this.userToken}`,
                 originator: `extension`,

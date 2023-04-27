@@ -37,7 +37,7 @@ export async function changeElement(contentArr: ElementValues[]) {
             }
             return {update: 'change successful'} 
         }
-        return  {update: 'change unsuccessful'}
+        return  {update: 'No voisascript links to convert'}
     } catch (error) {
         return {update: 'change unsuccessful'}
     } 

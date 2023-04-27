@@ -78,6 +78,11 @@
         border-radius: 50%;
         border: transparent;
         padding: 8px;
+        max-width: 40px;
+        max-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .settings-area button img {
         border-radius: 50%;

@@ -199,6 +199,7 @@
                         fileURL.set(url)
                         screen.set({current: 'Record audio 3', previous: ''})                
                     }
+                    console.log(handleTask.filename)                    
                     handleTask.on("complete", handleTaskComplete)
                     handleTask.on("error", (message)=> {
                         notify({
@@ -208,14 +209,15 @@
                         })
                         BtnLoading = false
                         Task_Monitor.update((task_arr)=> {
-                            if (task_arr.find((task)=> task.id === $recordParams.fileName)) {
-                                let index = task_arr.findIndex((task)=> task.id === $recordParams.fileName)
+                            if (task_arr.find((task)=> task.id === handleTask.filename)) {
+                                let index = task_arr.findIndex((task)=> task.id === handleTask.filename)
+                                console.log(index)                                
                                 task_arr[index].state = "failed"
                                 return task_arr
                             } else {
                                 const newTask = {
                                     name: 'Upload Task',
-                                    id: $recordParams.fileName,
+                                    id: `${handleTask.filename}`,
                                     state: "failed"
                                 }
                                 task_arr.push(newTask)
@@ -234,15 +236,15 @@
                         handleTask.on("complete", (url)=> {
                             fileURL.set(url)
                             Task_Monitor.update((task_arr)=> {
-                                let index = task_arr.findIndex((task)=> task.id === $recordParams.fileName)
-                                task_arr[index].state = "success"
+                                let index = task_arr.findIndex((task)=> task.id === handleTask.filename)                               
+                                task_arr[index].state = "success"                                
                                 return task_arr
                             })
                         })
                         Task_Monitor.update((task_arr)=> {
                             const newTask = {
                                 name: 'Upload Task',
-                                id: $recordParams.fileName,
+                                id: `${handleTask.filename}`,
                                 state: "pending"
                             }
                             task_arr.push(newTask)

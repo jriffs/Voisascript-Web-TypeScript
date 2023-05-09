@@ -2,7 +2,7 @@ import Browser from "webextension-polyfill";
 import { uploadTasks, taskDetails } from "../interfaces/interfaces";
 import { Writable } from "svelte/store";
 
-export async function storeTask(taskArray: uploadTasks[]) {
+/* export async function storeTask(taskArray: uploadTasks[]) {
     const uploadTasks = {
         taskArray 
     }
@@ -20,4 +20,17 @@ export async function persistTask(taskStore: Writable<taskDetails[]>) {
         }
         return tda
     })        
+} */
+
+export class LTS {
+
+    constructor(){}
+
+    /**
+     * updateLocal: updates the task local storage
+     */
+    public updateLocal() {
+        
+    }
+    
 }

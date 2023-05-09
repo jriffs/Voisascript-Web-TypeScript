@@ -4,9 +4,8 @@
     import Header from "../header.svelte";
     import NavButton from "./navigation-buttons.svelte";
     import Browser from "webextension-polyfill";
-    import { persistTask } from "../../misc/persist-task";
     let userDataPromise: Promise<Record<string, any>>
-    $: if ($screen.current === 'dashboard') userDataPromise = Browser.storage.local.get('userData')    
+    $: if ($screen.current === 'dashboard') userDataPromise = Browser.storage.local.get('userData')
 </script>
 
 {#if $screen.current === 'dashboard'}

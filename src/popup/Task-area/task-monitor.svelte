@@ -2,7 +2,7 @@
     import { Task_Monitor, screen } from "../store";
     import { fade } from "svelte/transition";
     import BackHeader from "../back-header.svelte";
-    import { persistTask, storeTask } from "../../misc/persist-task";
+    // import { persistTask, storeTask } from "../../misc/persist-task";
 
     // persistTask(Task_Monitor)
     const somn = [{
